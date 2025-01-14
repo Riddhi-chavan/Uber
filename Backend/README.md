@@ -127,11 +127,18 @@ Example:
 }
 ```
 
-### Responses:
+### Response Body:
+The response body will be a JSON object with the following fields:
 
-#### Success (200 OK):
-**Description:** User authenticated successfully.
-**Body:**
+- `token`: A string representing the JWT token.
+- `user`: An object containing:
+  - `_id`: A string representing the user ID.
+  - `fullname`: An object containing:
+    - `firstname`: A string representing the user's first name.
+    - `lastname`: A string representing the user's last name.
+  - `email`: A string representing the user's email address.
+
+Example:
 ```json
 {
   "token": "JWT_TOKEN_HERE",
@@ -146,9 +153,15 @@ Example:
 }
 ```
 
-#### Client Error (400 Bad Request):
-**Description:** Validation errors or missing required fields.
-**Body:**
+### Error Response:
+If there are validation errors, the response body will be a JSON object with the following fields:
+
+- `errors`: An array of objects containing:
+  - `msg`: A string representing the error message.
+  - `param`: A string representing the field name where the error occurred.
+  - `location`: A string representing the location of the error (e.g., "body").
+
+Example:
 ```json
 {
   "errors": [
@@ -158,15 +171,6 @@ Example:
       "location": "body"
     }
   ]
-}
-```
-
-#### Unauthorized (401 Unauthorized):
-**Description:** Invalid email or password.
-**Body:**
-```json
-{
-  "message": "Invalid email or password"
 }
 ```
 
@@ -192,5 +196,121 @@ curl -X POST http://localhost:3000/users/login \
     },
     "email": "john.doe@example.com"
   }
+}
+```
+
+# User Profile Endpoint
+
+## Endpoint: `/users/profile`
+
+### Method: GET
+
+### Description:
+This endpoint is used to retrieve the profile of the authenticated user.
+
+### Request Headers:
+The request should include the JWT token in the `Authorization` header or as a cookie.
+
+Example:
+```
+Authorization: Bearer JWT_TOKEN_HERE
+```
+
+### Response Body:
+The response body will be a JSON object containing the user details.
+
+Example:
+```json
+{
+  "_id": "USER_ID",
+  "fullname": {
+    "firstname": "John",
+    "lastname": "Doe"
+  },
+  "email": "john.doe@example.com"
+}
+```
+
+### Error Response:
+If the user is not authenticated, the response body will be a JSON object with the following fields:
+
+- `message`: A string representing the error message.
+
+Example:
+```json
+{
+  "message": "Unauthorized"
+}
+```
+
+### Example Request:
+```bash
+curl -X GET http://localhost:3000/users/profile \
+-H "Authorization: Bearer JWT_TOKEN_HERE"
+```
+
+### Example Response:
+```json
+{
+  "_id": "USER_ID",
+  "fullname": {
+    "firstname": "John",
+    "lastname": "Doe"
+  },
+  "email": "john.doe@example.com"
+}
+```
+
+# User Logout Endpoint
+
+## Endpoint: `/users/logout`
+
+### Method: GET
+
+### Description:
+This endpoint is used to log out the authenticated user. It clears the JWT token from the cookies and blacklists the token.
+
+### Request Headers:
+The request should include the JWT token in the `Authorization` header or as a cookie.
+
+Example:
+```
+Authorization: Bearer JWT_TOKEN_HERE
+```
+
+### Response Body:
+The response body will be a JSON object with the following fields:
+
+- `message`: A string representing the success message.
+
+Example:
+```json
+{
+  "message": "Logged out successfully"
+}
+```
+
+### Error Response:
+If the user is not authenticated, the response body will be a JSON object with the following fields:
+
+- `message`: A string representing the error message.
+
+Example:
+```json
+{
+  "message": "Unauthorized"
+}
+```
+
+### Example Request:
+```bash
+curl -X GET http://localhost:3000/users/logout \
+-H "Authorization: Bearer JWT_TOKEN_HERE"
+```
+
+### Example Response:
+```json
+{
+  "message": "Logged out successfully"
 }
 ```
