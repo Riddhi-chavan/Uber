@@ -315,7 +315,6 @@ curl -X GET http://localhost:3000/users/logout \
 }
 ```
 
-
 # Captain Registration Endpoint
 
 ## Endpoint: `/captains/register`
@@ -453,5 +452,137 @@ curl -X POST http://localhost:3000/captains/register \
       "vehicleType": "car"
     }
   }
+}
+```
+
+# Captain Profile Endpoint
+
+## Endpoint: `/captains/profile`
+
+### Method: GET
+
+### Description:
+This endpoint is used to retrieve the profile of the authenticated captain.
+
+### Request Headers:
+The request should include the JWT token in the `Authorization` header or as a cookie.
+
+Example:
+```
+Authorization: Bearer JWT_TOKEN_HERE
+```
+
+### Response Body:
+The response body will be a JSON object containing the captain details.
+
+Example:
+```json
+{
+  "captain": {
+    "_id": "CAPTAIN_ID",
+    "fullname": {
+      "firstname": "John",
+      "lastname": "Doe"
+    },
+    "email": "john.doe@example.com",
+    "vehicle": {
+      "color": "Red",
+      "plate": "ABC123",
+      "capacity": 4,
+      "vehicleType": "car"
+    }
+  }
+}
+```
+
+### Error Response:
+If the captain is not authenticated, the response body will be a JSON object with the following fields:
+
+- `message`: A string representing the error message.
+
+Example:
+```json
+{
+  "message": "Unauthorized"
+}
+```
+
+### Example Request:
+```bash
+curl -X GET http://localhost:3000/captains/profile \
+-H "Authorization: Bearer JWT_TOKEN_HERE"
+```
+
+### Example Response:
+```json
+{
+  "captain": {
+    "_id": "CAPTAIN_ID",
+    "fullname": {
+      "firstname": "John",
+      "lastname": "Doe"
+    },
+    "email": "john.doe@example.com",
+    "vehicle": {
+      "color": "Red",
+      "plate": "ABC123",
+      "capacity": 4,
+      "vehicleType": "car"
+    }
+  }
+}
+```
+
+# Captain Logout Endpoint
+
+## Endpoint: `/captains/logout`
+
+### Method: GET
+
+### Description:
+This endpoint is used to log out the authenticated captain. It clears the JWT token from the cookies and blacklists the token.
+
+### Request Headers:
+The request should include the JWT token in the `Authorization` header or as a cookie.
+
+Example:
+```
+Authorization: Bearer JWT_TOKEN_HERE
+```
+
+### Response Body:
+The response body will be a JSON object with the following fields:
+
+- `message`: A string representing the success message.
+
+Example:
+```json
+{
+  "message": "Logout successfully"
+}
+```
+
+### Error Response:
+If the captain is not authenticated, the response body will be a JSON object with the following fields:
+
+- `message`: A string representing the error message.
+
+Example:
+```json
+{
+  "message": "Unauthorized"
+}
+```
+
+### Example Request:
+```bash
+curl -X GET http://localhost:3000/captains/logout \
+-H "Authorization: Bearer JWT_TOKEN_HERE"
+```
+
+### Example Response:
+```json
+{
+  "message": "Logout successfully"
 }
 ```
