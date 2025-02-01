@@ -37,8 +37,8 @@ const CaptainSignup = () => {
     const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/captains/register`, CaptainData)
     if (response.status === 201) {
       const data = response.data
-      setCaptain(data.user)
-      localStorage.setItem("token", data.token)
+      setCaptain(data.captain)
+      localStorage.setItem("Captaintoken", data.token)
       navigate("/captain-home")
     }
     console.log(userData);
