@@ -11,7 +11,7 @@ const FinishRide = (props) => {
                 <i className="text-3xl text-gray-200  ri-arrow-down-wide-line"></i>
             </h5>
             <h3 className='text-2xl font-semibold mb-5'>Finish this Ride</h3>
-            <div className='flex items-center justify-between mt-4 p-3 bg-yellow-300 rounded-lg'>
+            <div className='flex items-center justify-between mt-4 p-4 border-yellow-300 border-2 rounded-lg'>
                 <div className='flex items-center gap-3 '>
                     <img className='h-12 w-12 rounded-full object-cover' src="https://img.freepik.com/free-psd/close-up-kid-expression-portrait_23-2150193262.jpg" alt="" />
                     <h2 className='text-lg font-medium'>Riya Sharma</h2>
@@ -45,9 +45,9 @@ const FinishRide = (props) => {
 
                 </div>
 
-                <div className='mt-6 w-full'>
-                    <Link to="/captain-riding" className='w-full flex justify-center text-lg mt-5 bg-green-600 text-white font-semibold p-3 rounded-lg'>Finish Ride</Link>
-                    <p>Click on finish ride buttom if you have received the payment</p>
+                <div className='mt-10 w-full'>
+                    <Link to="/captain-home" className='w-full flex justify-center text-lg mt-5 bg-green-600 text-white font-semibold p-3 rounded-lg'>Finish Ride</Link>
+                    <p className=' mt-10 text-xs text-center'>Click on finish ride buttom if you have received the payment</p>
                 </div>
             </div>
         </div>
