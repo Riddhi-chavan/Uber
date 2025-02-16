@@ -27,15 +27,17 @@ async function getFare(pickup, destination) {
     };
 
     const fare = {
-        auto: baseFare.auto + (farePerKm.auto * (distanceTime.distance.value / 1000)) + (farePerMinute.auto * (distanceTime.duration.value / 60)),
-        car: baseFare.car + (farePerKm.car * (distanceTime.distance.value / 1000)) + (farePerMinute.car * (distanceTime.duration.value / 60)),
-        moto: baseFare.moto + (farePerKm.moto * (distanceTime.distance.value / 1000)) + (farePerMinute.moto * (distanceTime.duration.value / 60))
+        auto: Math.round(baseFare.auto + (farePerKm.auto * (distanceTime.distance.value / 1000)) + (farePerMinute.auto * (distanceTime.duration.value / 60))),
+        car: Math.round(baseFare.car + (farePerKm.car * (distanceTime.distance.value / 1000)) + (farePerMinute.car * (distanceTime.duration.value / 60))),
+        moto: Math.round(baseFare.moto + (farePerKm.moto * (distanceTime.distance.value / 1000)) + (farePerMinute.moto * (distanceTime.duration.value / 60)))
     };
 
     return fare;
 
 
 }
+
+module.exports.getFare = getFare;
 
 function generateOTP(num) {
     if (!num || num <= 0) {
