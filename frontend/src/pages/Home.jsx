@@ -31,14 +31,18 @@ const Home = () => {
   const [vehicleType, setVehicleType] = useState(null)
 
 
+
   const { socket } = useContext(SocketContext)
   const { user } = useContext(UserDataContext)
- 
+
   useEffect(() => {
-    // sendMessage("join", {userType  : "user" , userId : user._id})
     socket.emit("join", { userType: "user", userId: user._id })
   }, [])
-  
+
+  socket.on("ride-confirmed", ride => {
+    setVehicleFound(false)
+    setWaitingForDriver(true)
+  })
 
   const debounce = (func, delay) => {
     let timeoutId;
@@ -182,6 +186,7 @@ const Home = () => {
   }
 
   async function createRide() {
+    console.log('Creating ride');
     const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/rides/create`, {
       pickup,
       destination,
@@ -194,6 +199,8 @@ const Home = () => {
 
     console.log(response.data);
   }
+
+
   return (
     <div className='h-screen relative overflow-hidden'>
       <img className='w-16 absolute left-5 top-5 mb-10' src="https://logos-world.net/wp-content/uploads/2020/05/Uber-Logo.png" alt="logo" />
