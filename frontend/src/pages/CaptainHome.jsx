@@ -8,6 +8,7 @@ import ConfirmRidePopUp from '../components/ConfirmRidePopUp'
 import { SocketContext } from '../context/SocketContext'
 import { CaptainDataContext } from '../context/CaptainContext'
 import axios from 'axios'
+import LiveTracking from '../components/LiveTracking'
 
 const CaptainHome = () => {
   const [ridePopPanel, setRidePopPanel] = useState(false)
@@ -106,7 +107,7 @@ const CaptainHome = () => {
       </div>
 
       <div className='h-3/5'>
-        <img className='h-full w-full object-cover' src="https://miro.medium.com/v2/resize:fit:1400/0*gwMx05pqII5hbfmX.gif" alt="" />
+        <LiveTracking />
       </div>
       <div className='h-2/5 p-6'>
         <CaptainDetails />

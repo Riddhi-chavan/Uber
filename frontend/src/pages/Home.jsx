@@ -11,6 +11,7 @@ import WaitingForDriver from '../components/WaitingForDriver'
 import { SocketContext } from '../context/SocketContext'
 import { UserDataContext } from '../context/UserContext'
 import { useNavigate } from 'react-router-dom'
+import LiveTracking from '../components/LiveTracking'
 
 const Home = () => {
   const [pickup, setPickup] = useState('')
@@ -217,7 +218,7 @@ const Home = () => {
       <div onClick={() => {
         setVehiclePanel(false)
       }} className='h-screen w-screen'>
-        <img className='h-full w-full object-cover' src="https://miro.medium.com/v2/resize:fit:1400/0*gwMx05pqII5hbfmX.gif" alt="" />
+        <LiveTracking />
       </div>
       <div className={`h-screen flex flex-col justify-end  absolute top-0 w-full  ${panelOpen && "bg-white"}`}>
         <div className='h-[30%] p-6 bg-white relative'>
