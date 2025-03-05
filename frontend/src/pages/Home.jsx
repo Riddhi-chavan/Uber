@@ -221,7 +221,7 @@ const Home = () => {
         <LiveTracking />
       </div>
       <div className={`h-screen flex flex-col justify-end  absolute top-0 w-full  ${panelOpen && "bg-white"}`}>
-        <div className='h-[30%] p-6 bg-white relative'>
+        <div className='h-[28%] p-6 bg-white relative'>
           <h5
             onClick={() => {
               setPanelOpen(false)
@@ -256,7 +256,7 @@ const Home = () => {
               type="text"
               placeholder='Enter your destination' />
           </form>
-          <button className='bg-black text-white px-4 py-2 rounded-lg my-3 w-full' onClick={findTrip}>Find Trip</button>
+          <button className='bg-black text-white px-4 py-2 rounded-lg my-5 w-full' onClick={findTrip}>Find Trip</button>
         </div>
         <div ref={panelRef} className='h-0 bg-white py-2'>
           <LocationSearchPanel
@@ -272,7 +272,7 @@ const Home = () => {
           selectVehicle={setVehicleType}
           fare={fare} setConfirmedRidePanel={setConfirmedRidePanel} setVehiclePanel={setVehiclePanel} />
       </div>
-      <div ref={confirmedRidePanelRef} className='fixed w-full bg-white  z-10 bottom-0  translate-y-full  px-3 py-6  pt-12'>
+      <div ref={confirmedRidePanelRef} className='fixed w-full bg-white  z-10 bottom-[-10px]  translate-y-full  px-3 py-6  pt-12'>
         <ConfirmRide
           pickup={pickup}
           destination={destination}
@@ -281,7 +281,7 @@ const Home = () => {
           createRide={createRide}
           setConfirmedRidePanel={setConfirmedRidePanel} setVehicleFound={setVehicleFound} />
       </div>
-      <div ref={vehicleFoundRef} className='fixed w-full bg-white  z-10 bottom-0  translate-y-full  px-3 py-6  pt-12'>
+      <div ref={vehicleFoundRef} className='fixed w-full bg-white  z-10 bottom-[-20px]  translate-y-full  px-3 py-6  pt-12'>
         <LookingForDriver
           pickup={pickup}
           destination={destination}

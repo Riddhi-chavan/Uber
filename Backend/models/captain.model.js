@@ -62,8 +62,88 @@ const captainSchema = mongoose.Schema({
         lng : {
             type : Number,
         }
-     }
+     }, rideStats: {
+        todayRides: {
+            type: Number,
+            default: 0
+        },
+        lastResetDate: {
+            type: Date,
+            default: Date.now
+        },
+        totalRides: {
+            type: Number,
+            default: 0
+        }
+     },
+     earningStats: {
+        todayEarnings: {
+            type: Number,
+            default: 0
+        },
+        totalEarnings: {
+            type: Number,
+            default: 0
+        },
+        lastResetDate: {
+            type: Date,
+            default: Date.now
+        }
+    }
 })
+
+captainSchema.methods.incrementTodayRideCount = async function() {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    // Check if we need to reset the counter (it's a new day)
+    if (this.rideStats.lastResetDate) {
+        const lastReset = new Date(this.rideStats.lastResetDate);
+        lastReset.setHours(0, 0, 0, 0);
+        
+        if (lastReset.getTime() < today.getTime()) {
+            // It's a new day, reset the counter
+            this.rideStats.todayRides = 0;
+            this.rideStats.lastResetDate = today;
+        }
+    }
+    
+    // Increment the counters
+    this.rideStats.todayRides += 1;
+    this.rideStats.totalRides += 1;
+    
+    return this.save();
+}
+
+captainSchema.methods.updateEarnings = async function(rideEarning) {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    // Ensure earningStats exists
+    if (!this.earningStats) {
+        this.earningStats = {
+            todayEarnings: 0,
+            totalEarnings: 0,
+            lastResetDate: today
+        };
+    }
+    
+    // Check if we need to reset daily earnings
+    const lastReset = new Date(this.earningStats.lastResetDate);
+    lastReset.setHours(0, 0, 0, 0);
+    
+    if (lastReset.getTime() < today.getTime()) {
+        // It's a new day, reset today's earnings
+        this.earningStats.todayEarnings = 0;
+        this.earningStats.lastResetDate = today;
+    }
+    
+    // Update earnings
+    this.earningStats.todayEarnings += rideEarning;
+    this.earningStats.totalEarnings += rideEarning;
+    
+    return this.save();
+}
 
 
 captainSchema.methods.generateAuthToken = function () {

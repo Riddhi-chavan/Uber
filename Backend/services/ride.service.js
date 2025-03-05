@@ -150,3 +150,42 @@ module.exports.endRide = async ({ rideId, captain }) => {
 
 }
 
+module.exports.endRide = async ({ rideId, captain }) => {
+    if (!rideId) {
+        throw new Error("Ride id is required")
+    }
+
+    const ride = await rideModel.findOne({
+        _id: rideId,
+        captain: captain._id
+    }).populate('user').populate('captain');
+
+    if (!ride) {
+        throw new Error("Ride not found")
+    }
+
+    if (ride.status !== 'ongoing') {
+        throw new Error("Ride is not ongoing")
+    }
+
+    // Update ride status to completed
+    await rideModel.findOneAndUpdate({
+        _id: rideId
+    }, {
+        status: 'completed'
+    })
+
+    // Increment captain's ride count and update earnings
+    const captainModel = require('../models/captain.model');
+    const captainDoc = await captainModel.findById(captain._id);
+    
+    if (captainDoc) {
+        // Increment ride count
+        await captainDoc.incrementTodayRideCount();
+        
+        // Update earnings (assuming ride.fare is the earnings)
+        await captainDoc.updateEarnings(ride.fare);
+    }
+
+    return ride
+}

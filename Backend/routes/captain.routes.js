@@ -28,5 +28,7 @@ router.get("/profile" , authMiddleware.authCaptain , captainController.getCaptai
 
 router.get("/logout" , authMiddleware.authCaptain , captainController.logoutCaptain)
 
+router.get("/ride-stats", authMiddleware.authCaptain, captainController.getCaptainRideStats)
+
 module.exports = router;
 

@@ -76,3 +76,44 @@ module.exports.logoutCaptain = async (req, res , next) => {
     res.clearCookie('token')
     res.status(200).json({message : "Logout successfully"})
 }
+
+
+// Add this function to your captain.controller.js
+
+module.exports.getCaptainRideStats = async (req, res, next) => {
+    try {
+        const captain = await captainModel.findById(req.captain._id);
+        
+        if (!captain) {
+            return res.status(404).json({ 
+                error: "Captain not found", 
+                message: "Unable to retrieve ride statistics" 
+            });
+        }
+
+        // Ensure stats exist with default values
+        const rideStats = captain.rideStats || {
+            todayRides: 0,
+            totalRides: 0
+        };
+
+        const earningStats = captain.earningStats || {
+            todayEarnings: 0,
+            totalEarnings: 0
+        };
+
+        res.status(200).json({
+            todayRides: rideStats.todayRides || 0,
+            totalRides: rideStats.totalRides || 0,
+            todayEarnings: earningStats.todayEarnings || 0,
+            totalEarnings: earningStats.totalEarnings || 0
+        });
+    } catch (error) {
+        console.error("Error in getCaptainRideStats:", error);
+        res.status(500).json({ 
+            error: "Server error", 
+            message: "Unable to retrieve ride statistics",
+            details: error.message 
+        });
+    }
+}
