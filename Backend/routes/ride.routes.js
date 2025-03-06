@@ -36,5 +36,18 @@ router.post('/end-ride',
     rideController.endRide
 )
 
+router.post('/create-payment-intent',
+    authMiddleware.authUser,
+    body('rideId').isMongoId().withMessage("Invalid ride id"),
+    rideController.createPaymentIntent
+)
+
+router.post('/confirm-payment',
+    authMiddleware.authUser,
+    body('rideId').isMongoId().withMessage("Invalid ride id"),
+    body('paymentIntentId').isString().withMessage("Invalid payment intent"),
+    rideController.confirmPayment
+)
+
 
 module.exports = router

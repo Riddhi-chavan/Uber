@@ -48,6 +48,11 @@ const rideSchema = new mongoose.Schema({
         type: String,
         select: false,
         required: true
+    },
+    paymentStatus: {
+        type: String,
+        enum: ['pending', 'paid', 'failed'],
+        default: 'pending'
     }
 
 });
