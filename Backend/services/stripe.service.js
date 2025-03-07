@@ -1,6 +1,7 @@
 const stripe = require('../config/stripe');
 const rideModel = require('../models/ride.model');
 const userModel = require('../models/user.model'); // Assuming you have this
+const { sendMessageToSocketId } = require('../socket');
 
 class StripeService {
     async createPaymentIntent(ride) {
@@ -54,19 +55,53 @@ class StripeService {
 
     async confirmPayment(rideId, paymentIntentId) {
         try {
-            const ride = await rideModel.findById(rideId);
+            const ride = await rideModel.findById(rideId)
+                .populate('user')
+                .populate('captain');
             
             if (!ride) {
                 throw new Error('Ride not found');
             }
-
+    
             const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
-
+    
             if (paymentIntent.status === 'succeeded') {
                 ride.paymentStatus = 'paid';
                 ride.paymentID = paymentIntentId;
                 await ride.save();
-
+    
+                // Create payment data object with all necessary information
+                const paymentData = {
+                    rideId: ride._id,
+                    captainId: ride.captain._id,
+                    userId: ride.user._id,
+                    paymentStatus: 'paid',
+                    timestamp: new Date().toISOString(),
+                    fare: ride.fare
+                };
+    
+                // Send notification to user if they have a socketId
+                if (ride.user && ride.user.socketId) {
+                    sendMessageToSocketId(ride.user.socketId, {
+                        event: "payment-completed",
+                        data: paymentData
+                    });
+                    console.log(`Payment notification sent to user socket: ${ride.user.socketId}`);
+                } else {
+                    console.log(`User ${ride.user._id} has no socketId, skipping direct notification`);
+                }
+                
+                // Send notification to captain if they have a socketId
+                if (ride.captain && ride.captain.socketId) {
+                    sendMessageToSocketId(ride.captain.socketId, {
+                        event: "payment-completed",
+                        data: paymentData
+                    });
+                    console.log(`Payment notification sent to captain socket: ${ride.captain.socketId}`);
+                } else {
+                    console.log(`Captain ${ride.captain._id} has no socketId, skipping direct notification`);
+                }
+    
                 return ride;
             } else {
                 throw new Error('Payment not successful');

@@ -1,16 +1,18 @@
-import React, { useState, useEffect, useContext } from 'react'
+import React, { useState, useEffect, useContext, useRef } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
 import { SocketContext } from '../context/SocketContext'
 import LiveTracking from '../components/LiveTracking'
 import { loadStripe } from '@stripe/stripe-js';
-import { 
-  Elements, 
-  CardElement, 
-  useStripe, 
-  useElements 
+import {
+  Elements,
+  CardElement,
+  useStripe,
+  useElements
 } from '@stripe/react-stripe-js';
 import axios from 'axios';
+import gsap from 'gsap'
+import { useGSAP } from '@gsap/react'
 
 // Stripe publishable key
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
@@ -20,6 +22,7 @@ const PaymentModal = ({ ride, onClose, onPaymentSuccess }) => {
   const elements = useElements();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const { socket } = useContext(SocketContext)
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -28,12 +31,12 @@ const PaymentModal = ({ ride, onClose, onPaymentSuccess }) => {
 
     try {
       // Create Payment Intent
-      const createIntentResponse = await axios.post(`${import.meta.env.VITE_BASE_URL}/rides/create-payment-intent`, 
+      const createIntentResponse = await axios.post(`${import.meta.env.VITE_BASE_URL}/rides/create-payment-intent`,
         { rideId: ride._id },
-        { 
-          headers: { 
-            'Authorization': `Bearer ${localStorage.getItem('token')}` 
-          } 
+        {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
         }
       );
 
@@ -57,16 +60,25 @@ const PaymentModal = ({ ride, onClose, onPaymentSuccess }) => {
 
       // Confirm payment on backend
       await axios.post(`${import.meta.env.VITE_BASE_URL}/rides/confirm-payment`,
-        { 
-          rideId: ride._id, 
-          paymentIntentId: paymentIntentId 
+        {
+          rideId: ride._id,
+          paymentIntentId: paymentIntentId
         },
-        { 
-          headers: { 
-            'Authorization': `Bearer ${localStorage.getItem('token')}` 
-          } 
+        {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
         }
       );
+
+      // In your PaymentModal's handleSubmit function
+      socket.emit("payment-completed", {
+        rideId: ride._id,
+        captainId: ride.captain._id,
+        userId: ride.user._id,
+        paymentStatus: 'paid',
+        timestamp: new Date().toISOString()
+      });
 
       onPaymentSuccess();
       console.log("payment successful")
@@ -77,12 +89,15 @@ const PaymentModal = ({ ride, onClose, onPaymentSuccess }) => {
     }
   };
 
+
+
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white p-6 rounded-lg w-96">
         <h2 className="text-xl font-bold mb-4">Pay for Your Ride</h2>
         <form onSubmit={handleSubmit}>
-          <CardElement 
+          <CardElement
             options={{
               style: {
                 base: {
@@ -104,15 +119,15 @@ const PaymentModal = ({ ride, onClose, onPaymentSuccess }) => {
             </div>
           )}
           <div className="flex justify-between mt-4">
-            <button 
-              type="button" 
-              onClick={onClose} 
+            <button
+              type="button"
+              onClick={onClose}
               className="bg-gray-200 px-4 py-2 rounded"
             >
               Cancel
             </button>
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               disabled={loading}
               className="bg-green-600 text-white px-4 py-2 rounded"
             >
@@ -131,6 +146,11 @@ const Riding = () => {
   const { ride } = location.state || {};
   const { socket } = useContext(SocketContext);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [showPaymentSuccess, setShowPaymentSuccess] = useState(false);
+
+  // Refs for GSAP animations
+  const successOverlayRef = useRef(null);
+  const successContentRef = useRef(null);
 
   useEffect(() => {
     // Safely handle socket connection
@@ -155,9 +175,78 @@ const Riding = () => {
     // Additional logic if needed
   };
 
+  useGSAP(() => {
+    if (showPaymentSuccess) {
+      // Initial states
+      gsap.set(successOverlayRef.current, { opacity: 0 });
+      gsap.set(successContentRef.current, { y: 200, opacity: 0 });
+
+      // Create animation timeline
+      const tl = gsap.timeline();
+
+      // Animate overlay fade in
+      tl.to(successOverlayRef.current, {
+        opacity: 1,
+        duration: 0.3
+      });
+
+      // Animate content from bottom to center
+      tl.to(successContentRef.current, {
+        y: 0,
+        opacity: 1,
+        duration: 0.4,
+        ease: "power2.out"
+      });
+
+      // Hold in center
+      tl.to({}, { duration: 2 });
+
+      // Animate content up and fade out
+      tl.to(successContentRef.current, {
+        y: -200,
+        opacity: 0,
+        duration: 0.4,
+        ease: "power2.in"
+      });
+
+      // Fade out overlay
+      tl.to(successOverlayRef.current, {
+        opacity: 0,
+        duration: 0.3
+      }, "-=0.3");
+    }
+  }, [showPaymentSuccess]);
+
+
+
+  useEffect(() => {
+    if (socket) {
+      socket.on("payment-completed", (data) => {
+        // Update UI to show payment was successful
+        if (data.rideId === ride._id) {
+          console.log("user sent  money")
+          setShowPaymentSuccess(true)
+
+
+          setRide(prevRide => ({
+            ...prevRide,
+            paymentStatus: 'paid'
+          }));
+
+        }
+      });
+    }
+
+    return () => {
+      if (socket) {
+        socket.off("payment-completed");
+      }
+    };
+  }, [socket, ride]);
+
   return (
-    <Elements stripe={stripePromise}>
-      <div className='h-screen'>
+    <Elements stripe={stripePromise} >
+      <div className='h-screen relative' >
         <Link to="/home" className='fixed right-2 top-2 h-10 w-10 bg-white flex items-center justify-center rounded-full'>
           <i className="text-lg font-medium ri-home-4-line"></i>
         </Link>
@@ -191,7 +280,7 @@ const Riding = () => {
               </div>
             </div>
           </div>
-          <button 
+          <button
             onClick={() => setShowPaymentModal(true)}
             className='w-full mt-5 bg-green-600 text-white font-semibold p-2 rounded-lg'
           >
@@ -201,13 +290,39 @@ const Riding = () => {
 
         {/* Payment Modal */}
         {showPaymentModal && (
-          <PaymentModal 
-            ride={ride} 
+          <PaymentModal
+            ride={ride}
             onClose={() => setShowPaymentModal(false)}
             onPaymentSuccess={handlePaymentSuccess}
           />
         )}
+
+        {showPaymentSuccess && (
+          <div
+            ref={successOverlayRef}
+            className='absolute top-0 bg-white bg-opacity-5 backdrop-blur-md w-full h-screen flex justify-center items-center'
+          >
+            <div
+              ref={successContentRef}
+              className='flex flex-col items-center'
+            >
+              <img
+                src='/payement-done.png'
+                className='w-24 h-24'
+                alt="Payment Successful"
+              />
+              <h1
+                className='text-xl text-green-800 drop-shadow-md mt-2'
+              >
+                Payment Done Successfully
+              </h1>
+            </div>
+          </div>
+        )}
+
+
       </div>
+
     </Elements>
   );
 };

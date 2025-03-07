@@ -32,9 +32,6 @@ const Home = () => {
   const [fare, setFare] = useState({})
   const [vehicleType, setVehicleType] = useState(null)
   const [ride, setRide] = useState(null)
-
-
-
   const { socket } = useContext(SocketContext)
   const { user } = useContext(UserDataContext)
 
@@ -53,7 +50,6 @@ const Home = () => {
     setWaitingForDriver(false)
     navigate('/riding', { state: { ride } })
   })
-
 
 
   const debounce = (func, delay) => {
