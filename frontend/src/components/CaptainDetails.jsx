@@ -17,22 +17,25 @@ const CaptainDetails = () => {
         const fetchRideStats = async () => {
             try {
                 setLoading(true);
-                const token = localStorage.getItem('token') || captain?.token;
-                
+                const token = localStorage.getItem('Captaintoken') || captain?.token;
+
                 if (!token) {
                     console.error("No authentication token found");
                     return;
                 }
-                
+
                 const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/captains/ride-stats`, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
                 });
-                
+
+                console.log("response", response.data)
+
                 if (response.data) {
                     setRideStats(response.data);
-                    
+
+
                     if (setCaptain && captain) {
                         setCaptain({
                             ...captain,
@@ -48,6 +51,7 @@ const CaptainDetails = () => {
                             }
                         });
                     }
+
                 }
             } catch (error) {
                 console.error("Error fetching ride stats:", error.response ? error.response.data : error);
@@ -55,11 +59,14 @@ const CaptainDetails = () => {
                 setLoading(false);
             }
         };
-        
+
         fetchRideStats();
-        
+
         // Existing event listeners and interval...
     }, [captain?._id]);
+
+
+
 
 
     return (
@@ -76,7 +83,7 @@ const CaptainDetails = () => {
                     <p className='text-sm font-medium text-gray-600'>Earned</p>
                 </div>
             </div>
-            
+
             <div className='flex p-3 mt-8 bg-gray-100 rounded-xl justify-center gap-5 items-start'>
                 <div className='text-center'>
                     <i className="text-3xl mb-2 font-thin ri-timer-2-line"></i>
@@ -96,7 +103,7 @@ const CaptainDetails = () => {
                         {loading ? '...' : (rideStats?.totalRides || 0)}
                     </h5>
                     <p className='text-sm text-gray-600'>Total Rides</p>
-                </div>  
+                </div>
             </div>
         </div>
     )

@@ -40,7 +40,7 @@ const UserSignup = () => {
     setPassword("")
   }
   return (
-    <div class="bg-black text-white flex min-h-screen flex-col items-center pt-16 sm:justify-center sm:pt-0">
+    <div class="bg-white text-black flex min-h-screen flex-col items-center pt-16 sm:justify-center sm:pt-0">
       <div class="text-foreground font-semibold text-2xl tracking-tighter mx-auto flex items-center">
         <div>
           <img className='w-16 ' src="/uberLogo.png" alt="" />
@@ -51,10 +51,10 @@ const UserSignup = () => {
         <div class="relative -mb-px h-px w-full bg-gradient-to-r from-transparent via-sky-300 to-transparent"
           bis_skin_checked="1"></div>
         <div
-          class="mx-5 border dark:border-b-white/50 dark:border-t-white/50 border-b-white/20 sm:border-t-white/20 dark:shadow-white/20 rounded-lg border-white/20 border-l-white/20 border-r-white/20 sm:shadow-sm lg:rounded-xl shadow-none">
+          class="mx-5 border border-b-black/50 border-t-black/50  sm:border-t-black/20 shadow-black/20 rounded-lg border-black/20 border-l-black/20 border-r-black/20 sm:shadow-sm lg:rounded-xl lg:shadow-none">
           <div class="flex flex-col p-6">
             <h3 class="text-xl font-semibold leading-6 tracking-tighter">Register</h3>
-            <p class="mt-1.5 text-sm font-medium text-white/50">Welcome, enter your credentials to continue.
+            <p class="mt-1.5 text-sm font-medium text-black/50">Welcome, enter your credentials to continue.
             </p>
           </div>
           <div class="p-6  pt-0">
@@ -145,7 +145,7 @@ const UserSignup = () => {
               <p className='text-left mt-2 text-sm ml-1'>Already have a account? <Link to="/login" className='text-gray-400'>Login here</Link></p>
               <div class="mt-4 flex items-center justify-end gap-x-2">
                 <button
-                  class="font-semibold hover:bg-black hover:text-white hover:ring hover:ring-white transition duration-300 inline-flex items-center justify-center rounded-md text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-white text-black h-10 px-4 py-2"
+                  class="font-semibold bg-black text-white hover:ring hover:ring-white transition duration-300 inline-flex items-center justify-center rounded-md text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50  h-10 px-4 py-2"
                   type="submit">Register</button>
               </div>
             </form>

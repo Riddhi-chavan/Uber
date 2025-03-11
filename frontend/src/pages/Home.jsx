@@ -209,7 +209,7 @@ const Home = () => {
   }
 
   return (
-    <div className='h-screen relative overflow-hidden'>
+    <div className='h-screen relative overflow-hidden '>
       <img className='w-16 absolute left-5 top-5 mb-10' src="https://logos-world.net/wp-content/uploads/2020/05/Uber-Logo.png" alt="logo" />
       <div onClick={() => {
         setVehiclePanel(false)
@@ -230,7 +230,7 @@ const Home = () => {
           <form onSubmit={(e) => {
             submitHandler(e)
           }}>
-            <div className="line absolute h-16 w-1 top-[45%] left-10 bg-gray-700 rounded-full"></div>
+            <div className="line absolute h-16 w-1 top-[47%] left-10 bg-gray-700 rounded-full"></div>
             <input
               onClick={() => {
                 setPanelOpen(true);
@@ -263,12 +263,12 @@ const Home = () => {
         </div>
 
       </div>
-      <div ref={vehiclePanelRef} className='fixed w-full bg-white  z-10 bottom-0  translate-y-full  px-3 py-10  pt-12'>
+      <div ref={vehiclePanelRef} className='fixed w-full bg-white  z-10 bottom-0  translate-y-full  px-3 py-10  pt-12 max-w-4xl mx-auto'>
         <VehiclePanel
           selectVehicle={setVehicleType}
           fare={fare} setConfirmedRidePanel={setConfirmedRidePanel} setVehiclePanel={setVehiclePanel} />
       </div>
-      <div ref={confirmedRidePanelRef} className='fixed w-full bg-white  z-10 bottom-[-10px]  translate-y-full  px-3 py-6  pt-12'>
+      <div ref={confirmedRidePanelRef} className='fixed w-full bg-white  z-10 bottom-[-10px]  translate-y-full  px-3 py-6  pt-12 max-w-4xl mx-auto'>
         <ConfirmRide
           pickup={pickup}
           destination={destination}
@@ -277,7 +277,7 @@ const Home = () => {
           createRide={createRide}
           setConfirmedRidePanel={setConfirmedRidePanel} setVehicleFound={setVehicleFound} />
       </div>
-      <div ref={vehicleFoundRef} className='fixed w-full bg-white  z-10 bottom-[-20px]  translate-y-full  px-3 py-6  pt-12'>
+      <div ref={vehicleFoundRef} className='fixed w-full bg-white  z-10 bottom-[-20px]  translate-y-full  px-3 py-6  pt-12 max-w-4xl mx-auto'>
         <LookingForDriver
           pickup={pickup}
           destination={destination}
@@ -286,7 +286,7 @@ const Home = () => {
           createRide={createRide}
           setVehicleFound={setVehicleFound} />
       </div>
-      <div ref={waitingForDriverRef} className='fixed w-full bg-white  z-10 bottom-0 px-3 py-6  pt-12'>
+      <div ref={waitingForDriverRef} className='fixed w-full bg-white  z-10 bottom-0 px-3 py-6  pt-12 max-w-4xl mx-auto'>
         <WaitingForDriver ride={ride} setWaitingForDriver={setWaitingForDriver} />
       </div>
     </div>

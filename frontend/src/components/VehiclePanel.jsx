@@ -33,13 +33,13 @@ const VehiclePanel = (props) => {
             }} className='flex  border-2 active:border-black rounded-xl p-3 mb-2  items-center justify-between'>
                 <div className='flex gap-6 items-center w-[90%]' >
                     <img className='h-12 ' src="https://www.uber-assets.com/image/upload/f_auto,q_auto:eco,c_fill,h_368,w_552/v1649231091/assets/2c/7fa194-c954-49b2-9c6d-a3b8601370f5/original/Uber_Moto_Orange_312x208_pixels_Mobile.png" alt="" />
-                    <div className='w-full '>
+                    <div className='w-full max-w-3xl '>
                         <h4 className='font-medium text-base'>Moto <span><i className="ri-user-3-fill"></i>1</span></h4>
                         <h5 className='font-medium text-sm'>3 min away</h5>
                         <p className='font-normal text-xs text-gray-600'>Affortable motorcycle rides</p>
                     </div>
                 </div>
-                <h2 className='text-lg font-semibold w-[10%]'>₹{props.fare.moto}</h2>
+                <h2 className='text-lg font-semibold w-[10%] flex justify-end'>₹{props.fare.moto}</h2>
 
             </div>
             <div onClick={() => {

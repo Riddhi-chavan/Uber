@@ -13,6 +13,8 @@ import {
 import axios from 'axios';
 import gsap from 'gsap'
 import { useGSAP } from '@gsap/react'
+import RideTracking from '../components/RideTracking'
+import { useJsApiLoader } from '@react-google-maps/api';
 
 // Stripe publishable key
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
@@ -82,6 +84,7 @@ const PaymentModal = ({ ride, onClose, onPaymentSuccess }) => {
 
       onPaymentSuccess();
       console.log("payment successful")
+
       setLoading(false);
     } catch (err) {
       setError(err.response?.data?.message || 'Payment failed');
@@ -147,6 +150,7 @@ const Riding = () => {
   const { socket } = useContext(SocketContext);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [showPaymentSuccess, setShowPaymentSuccess] = useState(false);
+  const [Paid, setPaid] = useState(false)
 
   // Refs for GSAP animations
   const successOverlayRef = useRef(null);
@@ -172,7 +176,6 @@ const Riding = () => {
 
   const handlePaymentSuccess = () => {
     setShowPaymentModal(false);
-    // Additional logic if needed
   };
 
   useGSAP(() => {
@@ -181,8 +184,12 @@ const Riding = () => {
       gsap.set(successOverlayRef.current, { opacity: 0 });
       gsap.set(successContentRef.current, { y: 200, opacity: 0 });
 
-      // Create animation timeline
-      const tl = gsap.timeline();
+      const tl = gsap.timeline({
+        onComplete: () => {
+          setShowPaymentSuccess(false); // Reset the state when animation completes
+        }
+      });
+
 
       // Animate overlay fade in
       tl.to(successOverlayRef.current, {
@@ -219,6 +226,7 @@ const Riding = () => {
 
 
 
+
   useEffect(() => {
     if (socket) {
       socket.on("payment-completed", (data) => {
@@ -226,13 +234,7 @@ const Riding = () => {
         if (data.rideId === ride._id) {
           console.log("user sent  money")
           setShowPaymentSuccess(true)
-
-
-          setRide(prevRide => ({
-            ...prevRide,
-            paymentStatus: 'paid'
-          }));
-
+          setPaid(true)
         }
       });
     }
@@ -244,14 +246,31 @@ const Riding = () => {
     };
   }, [socket, ride]);
 
+  console.log("ride", ride)
+
+  const libraries = ['places'];
+
+  const googleMapsApiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
+
+  // Load Google Maps once
+  const { isLoaded } = useJsApiLoader({
+    id: 'google-map-script',
+    googleMapsApiKey: googleMapsApiKey,
+    libraries: libraries
+  });
+
   return (
     <Elements stripe={stripePromise} >
       <div className='h-screen relative' >
         <Link to="/home" className='fixed right-2 top-2 h-10 w-10 bg-white flex items-center justify-center rounded-full'>
           <i className="text-lg font-medium ri-home-4-line"></i>
         </Link>
-        <div className='h-1/2'>
-          <LiveTracking />
+        <div className='h-[62%]'>
+          <RideTracking
+            rideData={ride}
+            googleMapsApiKey={googleMapsApiKey}
+            isLoaded={isLoaded}
+          />
         </div>
         <div className='h-1/2 p-4'>
           <div className='flex items-center justify-between'>
@@ -264,14 +283,8 @@ const Riding = () => {
           </div>
           <div className='flex gap-2 flex-col justify-between items-center'>
             <div className='w-full mt-5'>
-              <div className='flex items-center gap-5 border-b-2 p-3'>
-                <i className=" text-lg ri-map-pin-2-fill"></i>
-                <div className=''>
-                  <h3 className='text-lg font-medium'>562/11-A</h3>
-                  <p className='text-sm -mt-1 text-gray-600'>{ride?.destination}</p>
-                </div>
-              </div>
-              <div className='flex items-center gap-5  p-3'>
+
+              <div className='flex items-center gap-5  p-3 border-b-2'>
                 <i className="text-lg ri-currency-line"></i>
                 <div className=''>
                   <h3 className='text-lg font-medium'>₹{ride?.fare}</h3>
@@ -282,9 +295,13 @@ const Riding = () => {
           </div>
           <button
             onClick={() => setShowPaymentModal(true)}
-            className='w-full mt-5 bg-green-600 text-white font-semibold p-2 rounded-lg'
+            className={`w-full mt-5 ${Paid === true
+              ? 'bg-gray-400 cursor-not-allowed'
+              : 'bg-green-600 hover:bg-green-700'
+              } text-white font-semibold p-2 rounded-lg`}
+            disabled={Paid === true}
           >
-            Make a Payment
+            {Paid === true ? 'Payment Completed' : 'Make a Payment'}
           </button>
         </div>
 
