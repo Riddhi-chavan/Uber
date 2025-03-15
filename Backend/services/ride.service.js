@@ -48,8 +48,8 @@ function generateOTP(num) {
     return otp;
 }
 
-module.exports.createRide = async ({ user, pickup, destination, vehicleType, otp }) => {
-    if (!user || !pickup || !destination || !vehicleType || otp) {
+module.exports.createRide = async ({ user, pickup, destination, vehicleType, paymentMode, otp }) => {
+    if (!user || !pickup || !destination || !vehicleType) {
         throw new Error("User, pickup, destination and vehicleType are required");
     }
 
@@ -60,6 +60,7 @@ module.exports.createRide = async ({ user, pickup, destination, vehicleType, otp
         destination,
         otp: generateOTP(6),
         fare: fare[vehicleType],
+        paymentMode: paymentMode || 'Cash'
     })
 
     return ride;
@@ -178,11 +179,11 @@ module.exports.endRide = async ({ rideId, captain }) => {
     // Increment captain's ride count and update earnings
     const captainModel = require('../models/captain.model');
     const captainDoc = await captainModel.findById(captain._id);
-    
+
     if (captainDoc) {
         // Increment ride count
         await captainDoc.incrementTodayRideCount();
-        
+
         // Update earnings (assuming ride.fare is the earnings)
         await captainDoc.updateEarnings(ride.fare);
     }

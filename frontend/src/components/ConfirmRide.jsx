@@ -1,7 +1,6 @@
-import React from 'react'
+import React, { useState } from 'react'
 
 export const ConfirmRide = (props) => {
-    console.log("props.ride?.user.profilePicture", `${import.meta.env.VITE_BASE_URL}/uploads/${props.ride?.user.profilePicture.split('/').pop()}`)
     return (
         <div>
             <h5
@@ -32,15 +31,38 @@ export const ConfirmRide = (props) => {
                             <p className='text-sm -mt-1 text-gray-600'>{props.destination}</p>
                         </div>
                     </div>
-                    <div className='flex items-center gap-5  p-3'>
+                    <div className='flex items-center gap-5 p-3'>
                         <i className="text-lg ri-currency-line"></i>
-                        <div className=''>
+                        <div className='relative w-full'>
                             <h3 className='text-lg font-medium'>₹{props.fare[props.vehicleType]}</h3>
-                            <p className='text-sm -mt-1 text-gray-600'>Cash Cash</p>
+                            <div className='relative'>
+                                <div
+                                    className='flex items-center justify-between text-sm text-gray-600 cursor-pointer bg-gray-100 px-3 py-1 rounded'
+                                    onClick={props.toggleDropdown}
+                                >
+                                    <span>{props.paymentMode}</span>
+                                    <i className={`ri-arrow-down-s-line transition-transform ${props.dropdownOpen ? 'rotate-180' : ''}`}></i>
+                                </div>
+
+                                {props.dropdownOpen && (
+                                    <div className='absolute left-0 right-0 mt-1 bg-white shadow-lg rounded-md z-10 border'>
+                                        <div
+                                            className={`px-3 py-2 cursor-pointer hover:bg-gray-100 ${props.paymentMode === 'Cash' ? 'bg-gray-100' : ''}`}
+                                            onClick={() => props.selectPaymentMethod('Cash')}
+                                        >
+                                            Cash
+                                        </div>
+                                        <div
+                                            className={`px-3 py-2 cursor-pointer hover:bg-gray-100 ${props.paymentMode === 'Card' ? 'bg-gray-100' : ''}`}
+                                            onClick={() => props.selectPaymentMethod('Card')}
+                                        >
+                                            Card
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     </div>
-
-
                 </div>
                 <button onClick={() => {
                     props.setVehicleFound(true)
@@ -48,7 +70,6 @@ export const ConfirmRide = (props) => {
                     props.createRide()
                 }} className='w-full mt-5 bg-green-600 text-white font-semibold p-2 rounded-lg'>Confirm</button>
             </div>
-
         </div>
     )
 }

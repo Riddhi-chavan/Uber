@@ -259,6 +259,16 @@ const Riding = () => {
     libraries: libraries
   });
 
+  const handlePaymentProcess = () => {
+    if (ride.paymentMode === 'Card') {
+      setShowPaymentModal(true);
+    } else if (ride.paymentMode === 'Cash') {
+      setPaid(true)
+    }
+  }
+
+
+
   return (
     <Elements stripe={stripePromise} >
       <div className='h-screen relative' >
@@ -288,13 +298,13 @@ const Riding = () => {
                 <i className="text-lg ri-currency-line"></i>
                 <div className=''>
                   <h3 className='text-lg font-medium'>₹{ride?.fare}</h3>
-                  <p className='text-sm -mt-1 text-gray-600'>Cash Cash</p>
+                  <p className='text-sm -mt-1 text-gray-600'>{ride?.paymentMode}</p>
                 </div>
               </div>
             </div>
           </div>
           <button
-            onClick={() => setShowPaymentModal(true)}
+            onClick={() => handlePaymentProcess()}
             className={`w-full mt-5 ${Paid === true
               ? 'bg-gray-400 cursor-not-allowed'
               : 'bg-green-600 hover:bg-green-700'

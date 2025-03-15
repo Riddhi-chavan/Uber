@@ -10,7 +10,9 @@ router.post('/create',
     body('pickup').isString().isLength({ min: 3, max: 100 }).withMessage("Invalid pickup address"),
     body('destination').isString().isLength({ min: 3, max: 100 }).withMessage("Invalid destination address"),
     body('vehicleType').isString().isIn(["auto", "car", "moto"]).withMessage("Invalid vehicle type"),
+    body('paymentMode').isString().isIn(["Cash", "Card"]).optional({ checkFalsy: true }).withMessage("Invalid payment mode"),
     rideController.createRide)
+
 
 router.get('/get-fare',
     authMiddleware.authUser,

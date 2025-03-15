@@ -9,12 +9,10 @@ const rideSchema = new mongoose.Schema({
     captain: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "captain",
-
     },
     pickup: {
         type: String,
         required: true
-
     },
     destination: {
         type: String,
@@ -53,8 +51,12 @@ const rideSchema = new mongoose.Schema({
         type: String,
         enum: ['pending', 'paid', 'failed'],
         default: 'pending'
+    },
+    paymentMode: {
+        type: String,
+        enum: ['Cash', 'Card'],
+        default: 'Cash'
     }
-
 });
 
 module.exports = mongoose.model('ride', rideSchema);

@@ -34,6 +34,9 @@ const Home = () => {
   const [ride, setRide] = useState(null)
   const { socket } = useContext(SocketContext)
   const { user } = useContext(UserDataContext)
+  const [paymentMode, setPaymentMode] = useState('Cash') // Default payment mode
+  const [dropdownOpen, setDropdownOpen] = useState(false)
+
 
   const navigate = useNavigate()
 
@@ -105,6 +108,16 @@ const Home = () => {
 
   const submitHandler = (e) => {
     e.preventDefault()
+  }
+
+  const toggleDropdown = () => {
+    setDropdownOpen(!dropdownOpen)
+  }
+
+  // Select payment method
+  const selectPaymentMethod = (method) => {
+    setPaymentMode(method)
+    setDropdownOpen(false)
   }
 
   useGSAP(function () {
@@ -198,7 +211,8 @@ const Home = () => {
     const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/rides/create`, {
       pickup,
       destination,
-      vehicleType
+      vehicleType,
+      paymentMode
     }, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`
@@ -207,6 +221,7 @@ const Home = () => {
 
     console.log(response.data);
   }
+
 
 
   return (
@@ -278,6 +293,11 @@ const Home = () => {
           createRide={createRide}
           setConfirmedRidePanel={setConfirmedRidePanel} setVehicleFound={setVehicleFound}
           user={user}
+          toggleDropdown={toggleDropdown}
+          dropdownOpen={dropdownOpen}
+          paymentMode={paymentMode}
+          selectPaymentMethod={selectPaymentMethod}
+
         />
       </div>
       <div ref={vehicleFoundRef} className='fixed w-full bg-white  z-10 bottom-[-20px]  translate-y-full  px-3 py-6  pt-12 max-w-4xl mx-auto'>
@@ -287,7 +307,9 @@ const Home = () => {
           fare={fare}
           vehicleType={vehicleType}
           createRide={createRide}
-          setVehicleFound={setVehicleFound} />
+          setVehicleFound={setVehicleFound}
+          ride={ride}
+        />
       </div>
       <div ref={waitingForDriverRef} className='fixed w-full bg-white  z-10 bottom-0 px-3 py-6  pt-12 max-w-4xl mx-auto'>
         <WaitingForDriver ride={ride} setWaitingForDriver={setWaitingForDriver} />

@@ -10,10 +10,16 @@ module.exports.createRide = async (req, res, next) => {
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() })
     }
-    const { pickup, destination, vehicleType } = req.body;
+    const { pickup, destination, vehicleType, paymentMode } = req.body;
 
     try {
-        const ride = await rideService.createRide({ user: req.user._id, pickup, destination, vehicleType });
+        const ride = await rideService.createRide({
+            user: req.user._id,
+            pickup,
+            destination,
+            vehicleType,
+            paymentMode // Pass payment mode to service
+        });
         res.status(201).json(ride)
         const pickupCoordinates = await mapService.getAddressCoordinate(pickup);
 
@@ -24,14 +30,12 @@ module.exports.createRide = async (req, res, next) => {
             sendMessageToSocketId(captain.socketId, {
                 event: "new-ride",
                 data: rideWithUser
-
             })
         })
     } catch (error) {
         console.error("Detailed error:", error);
         res.status(500).json({ message: "Error creating ride", error: error.message })
     }
-
 }
 
 
