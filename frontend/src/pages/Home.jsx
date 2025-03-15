@@ -208,6 +208,7 @@ const Home = () => {
     console.log(response.data);
   }
 
+
   return (
     <div className='h-screen relative overflow-hidden '>
       <img className='w-16 absolute left-5 top-5 mb-10' src="https://logos-world.net/wp-content/uploads/2020/05/Uber-Logo.png" alt="logo" />
@@ -275,7 +276,9 @@ const Home = () => {
           fare={fare}
           vehicleType={vehicleType}
           createRide={createRide}
-          setConfirmedRidePanel={setConfirmedRidePanel} setVehicleFound={setVehicleFound} />
+          setConfirmedRidePanel={setConfirmedRidePanel} setVehicleFound={setVehicleFound}
+          user={user}
+        />
       </div>
       <div ref={vehicleFoundRef} className='fixed w-full bg-white  z-10 bottom-[-20px]  translate-y-full  px-3 py-6  pt-12 max-w-4xl mx-auto'>
         <LookingForDriver

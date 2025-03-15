@@ -65,15 +65,15 @@ const CaptainDetails = () => {
         // Existing event listeners and interval...
     }, [captain?._id]);
 
-
-
-
-
+    console.log("captain.profilePicture", `${import.meta.env.VITE_BASE_URL}/${captain.profilePicture.split('/').pop()}`)
     return (
         <div>
             <div className='flex items-center justify-between'>
                 <div className='flex items-center justify-start gap-3'>
-                    <img className='h-10 w-10 rounded-full object-cover' src="https://i.pinimg.com/236x/af/26/28/af26280b0ca305be47df0b799ed1b12b.jpg" alt="" />
+                    <img className='h-10 w-10 rounded-full object-cover' src={captain.profilePicture
+                        ? `${import.meta.env.VITE_BASE_URL}/${captain.profilePicture.split('/').pop()}`
+                        : "https://cdn-icons-png.flaticon.com/512/190/190659.png"
+                    } alt="" />
                     <h4 className='text-lg font-medium capitalize'>
                         {captain?.fullname?.firstname + " " + captain?.fullname?.lastname}
                     </h4>

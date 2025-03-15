@@ -1,6 +1,7 @@
 import React from 'react'
 
 const RidePopUp = (props) => {
+    console.log("props.ride?.user.profilePicture", `${import.meta.env.VITE_BASE_URL}/uploads/${props.ride?.user.profilePicture.split('/').pop()}`)
     return (
         <div>
             <h5
@@ -12,8 +13,11 @@ const RidePopUp = (props) => {
             <h3 className='text-2xl font-semibold mb-5'>New Ride Available!</h3>
             <div className='flex items-center justify-between mt-4 p-3 bg-yellow-300 rounded-lg'>
                 <div className='flex items-center gap-3 '>
-                    <img className='h-12 w-12 rounded-full object-cover' src="https://img.freepik.com/free-psd/close-up-kid-expression-portrait_23-2150193262.jpg" alt="" />
-                    <h2 className='text-lg font-medium'>{props.ride?.user.fullname.firstname  + " " +  props.ride?.user.fullname.lastname }</h2>
+                    <img className='h-12 w-12 rounded-full object-cover' src={props.ride?.user.profilePicture
+                        ? `${import.meta.env.VITE_BASE_URL}/uploads/${props.ride?.user.profilePicture.split('/').pop()}`
+                        : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT7fhZviOpkU0AhT-Xc6odz6OK1asyriViVEw&s"
+                    } alt="" />
+                    <h2 className='text-lg font-medium'>{props.ride?.user.fullname.firstname + " " + props.ride?.user.fullname.lastname}</h2>
                 </div>
                 <h5 className='text-lg font-semibold'>2.2 KM</h5>
             </div>
@@ -43,16 +47,16 @@ const RidePopUp = (props) => {
 
 
                 </div>
-              <div className='flex w-full items-center justify-between mt-5'>
-              <button className=' bg-gray-300 text-gray-700 font-semibold p-3 px-8 rounded-lg' onClick={() => {
-                    props.setRidePopPanel(false)
-                }}>Ignore</button>
-              <button className=' bg-green-600 text-white font-semibold p-3 px-8 rounded-lg' onClick={() => {
-                    props.setConfirmRidePopPanel(true)
-                    props.confirmRide()
-                }}>Accept</button>
-               
-              </div>
+                <div className='flex w-full items-center justify-between mt-5'>
+                    <button className=' bg-gray-300 text-gray-700 font-semibold p-3 px-8 rounded-lg' onClick={() => {
+                        props.setRidePopPanel(false)
+                    }}>Ignore</button>
+                    <button className=' bg-green-600 text-white font-semibold p-3 px-8 rounded-lg' onClick={() => {
+                        props.setConfirmRidePopPanel(true)
+                        props.confirmRide()
+                    }}>Accept</button>
+
+                </div>
             </div>
         </div>
     )

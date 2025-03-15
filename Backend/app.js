@@ -24,6 +24,7 @@ app.use("/maps", mapsRoutes)
 app.use("/rides", rideRoutes)
 const path = require('path');
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/captain-uploads', express.static(path.join(__dirname, 'captain-uploads')));
 
 
 module.exports = app

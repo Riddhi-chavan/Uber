@@ -97,6 +97,9 @@ const CaptainHome = () => {
       })
     }
   }, [confirmRidePopPanel])
+
+  console.log("ride", ride)
+
   return (
     <div className='h-screen'>
       <div className='fixed p-6 top-0 flex justify-between items-center w-full'>
@@ -123,7 +126,8 @@ const CaptainHome = () => {
       <div ref={confirmRidePopPanelRef} className='fixed w-full bg-white  h-screen translate-y-full  z-10 bottom-0   px-3 py-10  pt-12 max-w-4xl mx-auto'>
         <ConfirmRidePopUp
           ride={ride}
-          setConfirmRidePopPanel={setConfirmRidePopPanel} setRidePopPanel={setRidePopPanel} />
+          setConfirmRidePopPanel={setConfirmRidePopPanel} setRidePopPanel={setRidePopPanel}
+        />
       </div>
     </div>
   )
