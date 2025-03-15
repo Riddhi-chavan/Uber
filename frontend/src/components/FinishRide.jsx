@@ -18,6 +18,8 @@ const FinishRide = (props) => {
             navigate('/captain-home')
         }
     }
+
+    console.log('pfp', `${import.meta.env.VITE_BASE_URL}/uploads/${props.ride?.user.profilePicture.split('/').pop()}`)
     return (
         <div >
             <h5
@@ -29,10 +31,11 @@ const FinishRide = (props) => {
             <h3 className='text-2xl font-semibold mb-5'>Finish this Ride</h3>
             <div className='flex items-center justify-between mt-4 p-4 border-yellow-300 border-2 rounded-lg'>
                 <div className='flex items-center gap-3 '>
-                    <img className='h-12 w-12 rounded-full object-cover' src="https://img.freepik.com/free-psd/close-up-kid-expression-portrait_23-2150193262.jpg" alt="" />
+                    <img className='h-12 w-12 rounded-full object-cover' src={props.ride?.user.profilePicture
+                        ? `${import.meta.env.VITE_BASE_URL}/uploads/${props.ride?.user.profilePicture.split('/').pop()}`
+                        : "/pessenger.png"} alt="" />
                     <h2 className='text-lg font-medium'>{props.ride?.user.fullname.firstname}</h2>
                 </div>
-                <h5 className='text-lg font-semibold'>2.2 KM</h5>
             </div>
             <div className='flex gap-2 flex-col justify-between items-center'>
                 <div className='w-full mt-5'>
