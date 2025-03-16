@@ -11,7 +11,11 @@ const mapsRoutes = require('./routes/maps.routes')
 const rideRoutes = require('./routes/ride.routes')
 
 connecToDb()
-app.use(cors())
+app.use(cors({
+    origin: '*', // Allows access from any origin
+    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allowed methods
+    allowedHeaders: ['Content-Type', 'Authorization'] // Allowed headers
+}));
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(CookieParser())
