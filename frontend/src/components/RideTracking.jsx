@@ -4,14 +4,14 @@ import {
     Marker,
     DirectionsService,
     DirectionsRenderer,
-    InfoWindow
+    InfoWindow,
+    LoadScript
 } from '@react-google-maps/api';
 
 const containerStyle = {
     width: '100%',
     height: '100%',
 };
-
 const defaultCenter = {
     lat: 18.9801532,
     lng: 73.1002789
@@ -49,6 +49,9 @@ const RideTracking = ({ rideData, googleMapsApiKey, isLoaded }) => {
         otp,
         fare
     } = rideData;
+
+    console.log("googleMapsApiKey", googleMapsApiKey)
+
 
     // State for locations
     const [pickupLocation, setPickupLocation] = useState(null);
@@ -109,7 +112,6 @@ const RideTracking = ({ rideData, googleMapsApiKey, isLoaded }) => {
         // or via WebSocket updates from your backend
     }, [userLocation, pickupLocation]);
 
-    // Update captain's location in real-time (simulate for demo)
     useEffect(() => {
         // In real application, you would use WebSocket or polling to get captain's location
         // For the demo, we'll simulate captain movement
@@ -241,100 +243,104 @@ const RideTracking = ({ rideData, googleMapsApiKey, isLoaded }) => {
     }
 
     return (
+
         <div className="relative w-full h-full">
-            <GoogleMap
-                mapContainerStyle={containerStyle}
-                center={mapCenter}
-                zoom={14}
-                onLoad={map => { mapRef.current = map; }}
-            >
-                {/* Pickup Marker */}
-                {pickupLocation && (
-                    <Marker
-                        position={pickupLocation}
-                        icon={{
-                            url: "http://maps.google.com/mapfiles/ms/icons/green-dot.png"
-                        }}
-                        onClick={() => handleMarkerClick('pickup')}
-                    />
-                )}
+            <LoadScript googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}>
+                <GoogleMap
+                    mapContainerStyle={containerStyle}
+                    center={mapCenter}
+                    zoom={14}
+                    onLoad={map => { mapRef.current = map; }}
+                >
+                    {/* Pickup Marker */}
+                    {pickupLocation && (
+                        <Marker
+                            position={pickupLocation}
+                            icon={{
+                                url: "http://maps.google.com/mapfiles/ms/icons/green-dot.png"
+                            }}
+                            onClick={() => handleMarkerClick('pickup')}
+                        />
+                    )}
 
-                {/* Destination Marker */}
-                {destinationLocation && (
-                    <Marker
-                        position={destinationLocation}
-                        icon={{
-                            url: "http://maps.google.com/mapfiles/ms/icons/red-dot.png"
-                        }}
-                        onClick={() => handleMarkerClick('destination')}
-                    />
-                )}
+                    {/* Destination Marker */}
+                    {destinationLocation && (
+                        <Marker
+                            position={destinationLocation}
+                            icon={{
+                                url: "http://maps.google.com/mapfiles/ms/icons/red-dot.png"
+                            }}
+                            onClick={() => handleMarkerClick('destination')}
+                        />
+                    )}
 
-                {/* Captain Position Marker */}
-                {captainLocation && (
-                    <Marker
-                        position={captainLocation}
-                        icon={{
-                            url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png"
-                        }}
-                        onClick={() => handleMarkerClick('captain')}
-                    />
-                )}
+                    {/* Captain Position Marker */}
+                    {captainLocation && (
+                        <Marker
+                            position={captainLocation}
+                            icon={{
+                                url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png"
+                            }}
+                            onClick={() => handleMarkerClick('captain')}
+                        />
+                    )}
 
-                {/* User Position Marker */}
-                {userLocation && (
-                    <Marker
-                        position={userLocation}
-                        icon={{
-                            url: "http://maps.google.com/mapfiles/ms/icons/yellow-dot.png"
-                        }}
-                        onClick={() => handleMarkerClick('user')}
-                    />
-                )}
+                    {/* User Position Marker */}
+                    {userLocation && (
+                        <Marker
+                            position={userLocation}
+                            icon={{
+                                url: "http://maps.google.com/mapfiles/ms/icons/yellow-dot.png"
+                            }}
+                            onClick={() => handleMarkerClick('user')}
+                        />
+                    )}
 
-                {/* Info Window */}
-                {showInfoWindow && selectedMarker && (
-                    <InfoWindow
-                        position={
-                            selectedMarker === 'pickup' ? pickupLocation :
-                                selectedMarker === 'destination' ? destinationLocation :
-                                    selectedMarker === 'captain' ? captainLocation :
-                                        userLocation
-                        }
-                        onCloseClick={handleInfoWindowClose}
-                    >
-                        <div>{renderInfoWindowContent()}</div>
-                    </InfoWindow>
-                )}
+                    {/* Info Window */}
+                    {showInfoWindow && selectedMarker && (
+                        <InfoWindow
+                            position={
+                                selectedMarker === 'pickup' ? pickupLocation :
+                                    selectedMarker === 'destination' ? destinationLocation :
+                                        selectedMarker === 'captain' ? captainLocation :
+                                            userLocation
+                            }
+                            onCloseClick={handleInfoWindowClose}
+                        >
+                            <div>{renderInfoWindowContent()}</div>
+                        </InfoWindow>
+                    )}
 
-                {/* Request for directions */}
-                {directionsRequested && !directions && pickupLocation && destinationLocation && (
-                    <DirectionsService
-                        options={{
-                            origin: pickupLocation,
-                            destination: destinationLocation,
-                            travelMode: 'DRIVING',
-                        }}
-                        callback={directionsCallback}
-                        onLoad={directionsService => { directionsServiceRef.current = directionsService; }}
-                    />
-                )}
+                    {/* Request for directions */}
+                    {directionsRequested && !directions && pickupLocation && destinationLocation && (
+                        <DirectionsService
+                            options={{
+                                origin: pickupLocation,
+                                destination: destinationLocation,
+                                travelMode: 'DRIVING',
+                            }}
+                            callback={directionsCallback}
+                            onLoad={directionsService => { directionsServiceRef.current = directionsService; }}
+                        />
+                    )}
 
-                {/* Render directions on map */}
-                {directions && (
-                    <DirectionsRenderer
-                        options={{
-                            directions: directions,
-                            polylineOptions: {
-                                strokeColor: '#4285F4',
-                                strokeWeight: 6,
-                                strokeOpacity: 0.8,
-                            },
-                            suppressMarkers: true, // We're using our own markers
-                        }}
-                    />
-                )}
-            </GoogleMap>
+                    {/* Render directions on map */}
+                    {directions && (
+                        <DirectionsRenderer
+                            options={{
+                                directions: directions,
+                                polylineOptions: {
+                                    strokeColor: '#4285F4',
+                                    strokeWeight: 6,
+                                    strokeOpacity: 0.8,
+                                },
+                                suppressMarkers: true, // We're using our own markers
+                            }}
+                        />
+                    )}
+                </GoogleMap>
+            </LoadScript>
+
 
             {/* Ride controls and info panel */}
             <div className="absolute bottom-4 left-0 right-0 flex justify-center">
