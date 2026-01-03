@@ -31,9 +31,7 @@ const FinishRide = (props) => {
             <h3 className='text-2xl font-semibold mb-5'>Finish this Ride</h3>
             <div className='flex items-center justify-between mt-4 p-4 border-yellow-300 border-2 rounded-lg'>
                 <div className='flex items-center gap-3 '>
-                    <img className='h-12 w-12 rounded-full object-cover' src={props.ride?.user.profilePicture
-                        ? `${import.meta.env.VITE_BASE_URL}/uploads/${props.ride?.user.profilePicture.split('/').pop()}`
-                        : "/pessenger.png"} alt="" />
+                    <img className='h-12 w-12 rounded-full object-cover' src={props.ride?.user.profilePicture} alt="" />
                     <h2 className='text-lg font-medium'>{props.ride?.user.fullname.firstname}</h2>
                 </div>
             </div>

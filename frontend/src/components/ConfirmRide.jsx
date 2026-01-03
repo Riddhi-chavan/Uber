@@ -12,10 +12,14 @@ export const ConfirmRide = (props) => {
             </h5>
             <h3 className='text-2xl font-semibold mb-5'>Confirm your Ride</h3>
             <div className='flex gap-2 flex-col justify-between items-center'>
-                <img className='h-20 w-20 rounded-full object-cover' src={props.user.profilePicture
-                    ? `${import.meta.env.VITE_BASE_URL}/uploads/${props.user.profilePicture.split('/').pop()}`
-                    : "/pessenger.png"
-                } alt="" />
+                 <img 
+                    className='h-20 w-20 rounded-full object-cover' 
+                    src={props.user.profilePicture || "/pessenger.png"} 
+                    alt="User Profile" 
+                    onError={(e) => {
+                        e.target.src = "/pessenger.png"; // Fallback if image fails to load
+                    }}
+                />
                 <div className='w-full mt-5'>
                     <div className='flex items-center gap-5 border-b-2 p-3'>
                         <i className=" text-lg ri-map-pin-user-fill"></i>

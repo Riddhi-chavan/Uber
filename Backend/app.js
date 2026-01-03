@@ -31,8 +31,4 @@ app.use("/captains", captainRoutes)
 app.use("/maps", mapsRoutes)
 app.use("/rides", rideRoutes)
 
-// REMOVE OR COMMENT OUT THESE LINES:
-// app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-// app.use('/captain-uploads', express.static(path.join(__dirname, 'captain-uploads')));
-
 module.exports = app

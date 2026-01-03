@@ -6,7 +6,7 @@ const userSchema = new mongoose.Schema({
     fullname: {
         firstname: {
             type: String,
-            require: true,
+            required: true, // Changed from 'require' to 'required'
             minlength: [3, 'First name must be at least 3 characters long'],
         },
         lastname: {
@@ -16,13 +16,14 @@ const userSchema = new mongoose.Schema({
     },
     email: {
         type: String,
-        require: true,
+        required: true, // Changed from 'require' to 'required'
         unique: true,
+        lowercase: true, // Added to normalize emails
         minlength: [5, 'Email must be at least 5 characters long']
     },
     password: {
         type: String,
-        require: true,
+        required: true, // Changed from 'require' to 'required'
         select: false
     },
     socketId: {
@@ -30,23 +31,27 @@ const userSchema = new mongoose.Schema({
     },
     profilePicture: {
         type: String,
-        default: '' // Default empty string if no profile picture
+        default: '' // Cloudinary URL
+    },
+    profilePicPublicId: {
+        type: String,
+        default: '' // Cloudinary public_id for deletion
     }
-})
+}, { timestamps: true }); // Added timestamps for createdAt and updatedAt
 
 userSchema.methods.generateAuthToken = function () {
     const token = jwt.sign({ _id: this._id }, process.env.JWT_SECRET, { expiresIn: '24h' });
     return token
 }
 
-userSchema.methods.comparePassword = async function (password) { //compare the plain password with hash version stored in db
+userSchema.methods.comparePassword = async function (password) {
     return await bcrypt.compare(password, this.password)
 }
 
-userSchema.statics.hashPassword = async function (password) { // create a hashed version of the plain text
+userSchema.statics.hashPassword = async function (password) {
     return await bcrypt.hash(password, 10)
 }
 
-const userModel = mongoose.model('user', userSchema) //creates and registers a Mongoose model for your user collection
+const userModel = mongoose.model('user', userSchema)
 
 module.exports = userModel

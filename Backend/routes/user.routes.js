@@ -1,61 +1,100 @@
-const express = require('express') // it's a node js framework 
-const router = express.Router() // initialise router for api request
-const { body } = require("express-validator") //It's used to validate and sanitize request body data in your Express application.
-const userController = require("../controllers/user.controller")
-const authMiddlewear = require("../middlewares/auth.middleware")
-const multer = require('multer')
-const path = require('path')
-const crypto = require('crypto')
+// routes/user.routes.js
+const express = require('express');
+const router = express.Router();
+const { body } = require("express-validator");
+const userController = require("../controllers/user.controller");
+const authMiddleware = require("../middlewares/auth.middleware");
+const multer = require('multer');
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const cloudinary = require('../config/cloudinary');
 
-// Set up multer storage configuration
-const storage = multer.diskStorage({
-  destination: function(req, file, cb) {
-    cb(null, 'uploads/') // Make sure this directory exists
-  },
-  filename: function(req, file, cb) {
-    // Create unique filename with original extension
-    crypto.randomBytes(16, (err, buf) => {
-      if (err) return cb(err)
-      cb(null, buf.toString('hex') + path.extname(file.originalname))
-    })
-  }
-})
+console.log('🔧 Loading user routes with Cloudinary storage');
 
-// Filter files to only allow images
-const fileFilter = (req, file, cb) => {
-  if (file.mimetype.startsWith('image/')) {
-    cb(null, true)
-  } else {
-    cb(new Error('Only image files are allowed!'), false)
-  }
-}
+// Configure Cloudinary storage for multer
+const storage = new CloudinaryStorage({
+    cloudinary: cloudinary,
+    params: {
+        folder: 'user-profiles',
+        allowed_formats: ['jpg', 'jpeg', 'png', 'gif', 'webp'],
+        transformation: [
+            { width: 500, height: 500, crop: 'limit' },
+            { quality: 'auto' }
+        ]
+    }
+});
 
-// Set up multer upload
+console.log('✅ Cloudinary storage configured for users');
+
+// Set up multer upload with error handling
 const upload = multer({ 
-  storage: storage,
-  limits: {
-    fileSize: 5 * 1024 * 1024 // 5MB limit
-  },
-  fileFilter: fileFilter
-})
+    storage: storage,
+    limits: {
+        fileSize: 5 * 1024 * 1024 // 5MB limit
+    },
+    fileFilter: (req, file, cb) => {
+        console.log('📁 File filter check:', {
+            fieldname: file.fieldname,
+            originalname: file.originalname,
+            mimetype: file.mimetype
+        });
+        
+        if (file.mimetype.startsWith('image/')) {
+            cb(null, true);
+        } else {
+            cb(new Error('Only image files are allowed!'), false);
+        }
+    }
+});
 
-router.post('/register', [
-    upload.single('profilePic'), // Add multer middleware
-    body('email').isEmail().withMessage('Invalid Email'),
-    body('firstname').isLength({ min: 3 }).withMessage('First name must be at least 3 characters long'),
-    body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters long'),
-], userController.resgisterUser)
+// Multer error handling middleware
+const handleMulterError = (err, req, res, next) => {
+    console.error('❌ Multer Error:', err);
+    
+    if (err instanceof multer.MulterError) {
+        if (err.code === 'LIMIT_FILE_SIZE') {
+            return res.status(400).json({ message: 'File size too large. Maximum 5MB allowed.' });
+        }
+        return res.status(400).json({ message: `Upload error: ${err.message}` });
+    }
+    
+    if (err) {
+        return res.status(400).json({ message: err.message });
+    }
+    
+    next();
+};
 
-module.exports = router;
-
+router.post('/register', 
+    (req, res, next) => {
+        console.log('📥 Register request received');
+        console.log('Body:', req.body);
+        console.log('Content-Type:', req.headers['content-type']);
+        next();
+    },
+    upload.single('profilePic'),
+    handleMulterError,
+    [
+        body('email').isEmail().withMessage('Invalid Email'),
+        body('firstname').isLength({ min: 3 }).withMessage('First name must be at least 3 characters long'),
+        body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters long'),
+    ],
+    userController.resgisterUser
+);
 
 router.post('/login', [
     body('email').isEmail().withMessage('Invalid Email'),
     body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters long'),
-]
-, userController.loginUser
-)
+], userController.loginUser);
 
-router.get('/logout', authMiddlewear.authUser, userController.logoutUser)
+router.get('/logout', authMiddleware.authUser, userController.logoutUser);
 
-router.get('/profile', authMiddlewear.authUser, userController.getUserProfile)
+router.get('/profile', authMiddleware.authUser, userController.getUserProfile);
+
+router.put('/profile/picture', 
+    authMiddleware.authUser,
+    upload.single('profilePic'),
+    handleMulterError,
+    userController.updateProfilePicture
+);
+
+module.exports = router;

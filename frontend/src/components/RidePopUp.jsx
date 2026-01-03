@@ -13,10 +13,7 @@ const RidePopUp = (props) => {
             <h3 className='text-2xl font-semibold mb-5'>New Ride Available!</h3>
             <div className='flex items-center justify-between mt-4 p-3 bg-yellow-300 rounded-lg'>
                 <div className='flex items-center gap-3 '>
-                    <img className='h-12 w-12 rounded-full object-cover' src={props.ride?.user.profilePicture
-                        ? `${import.meta.env.VITE_BASE_URL}/uploads/${props.ride?.user.profilePicture.split('/').pop()}`
-                        : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT7fhZviOpkU0AhT-Xc6odz6OK1asyriViVEw&s"
-                    } alt="" />
+                    <img className='h-12 w-12 rounded-full object-cover' src={props.ride?.user.profilePicture} alt="" />
                     <h2 className='text-lg font-medium'>{props.ride?.user.fullname.firstname + " " + props.ride?.user.fullname.lastname}</h2>
                 </div>
 
