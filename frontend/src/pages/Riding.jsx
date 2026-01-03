@@ -15,6 +15,7 @@ import gsap from 'gsap'
 import { useGSAP } from '@gsap/react'
 import RideTracking from '../components/RideTracking'
 import { useJsApiLoader } from '@react-google-maps/api';
+import lookingForRide from "../assets/lookingForRide.png"
 
 // Stripe publishable key
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
@@ -284,7 +285,7 @@ const Riding = () => {
         </div>
         <div className='h-1/2 p-4'>
           <div className='flex items-center justify-between'>
-            <img className='h-12' src="https://www.uber-assets.com/image/upload/f_auto,q_auto:eco,c_fill,h_552,w_552/v1555367310/assets/30/51e602-10bb-4e65-b122-e394d80a9c47/original/Final_UberX.png" alt="" />
+            <img className='h-12' src={lookingForRide} alt="" />
             <div className='text-right'>
               <h2 className='text-lg font-medium capitalize'>{ride?.captain.fullname.firstname}</h2>
               <h4 className='text-xl font-semibold -mt-1 -mb-1'>{ride?.captain.vehicle.plate}</h4>

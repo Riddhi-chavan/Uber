@@ -49,7 +49,7 @@ const RideTracking = ({ rideData, googleMapsApiKey, isLoaded }) => {
         fare
     } = rideData;
 
-    console.log("googleMapsApiKey", googleMapsApiKey);
+
 
     // State for locations
     const [pickupLocation, setPickupLocation] = useState(null);

@@ -1,4 +1,5 @@
 import React from 'react'
+import lookingForRide from "../assets/lookingForRide.png"
 
 const WaitingForDriver = (props) => {
     console.log("ride", props.ride)
@@ -12,7 +13,7 @@ const WaitingForDriver = (props) => {
                 <i className="text-3xl text-gray-200  ri-arrow-down-wide-line"></i>
             </h5>
             <div className='flex items-center justify-between'>
-                <img className='h-12' src="https://www.uber-assets.com/image/upload/f_auto,q_auto:eco,c_fill,h_552,w_552/v1555367310/assets/30/51e602-10bb-4e65-b122-e394d80a9c47/original/Final_UberX.png" alt="" />
+                <img className='h-12' src={lookingForRide} alt="" />
                 <div className='text-right'>
                     <h2 className='text-lg font-medium capitalize'>{props.ride?.captain.fullname.firstname}</h2>
                     <h4 className='text-xl font-semibold -mt-1 -mb-1'>{props.ride?.captain.vehicle.plate}</h4>
