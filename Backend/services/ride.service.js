@@ -109,46 +109,19 @@ module.exports.startRide = async ({ rideId, otp, captain }) => {
         throw new Error('Invalid OTP')
     }
 
-    await rideModel.findOneAndUpdate({
-        _id: rideId
-    }, {
-        status: 'ongoing'
-    })
+    // ✅ Add { new: true } to get the UPDATED document
+    const updatedRide = await rideModel.findOneAndUpdate(
+        { _id: rideId },
+        { status: 'ongoing' },
+        { new: true } 
+    ).populate('user').populate('captain').select('+otp')
 
-    sendMessageToSocketId(ride.user.socketId, {
+    sendMessageToSocketId(updatedRide.user.socketId, {
         event: "ride-started",
-        data: ride
+        data: updatedRide 
     })
 
-    return ride;
-}
-
-module.exports.endRide = async ({ rideId, captain }) => {
-    if (!rideId) {
-        throw new Error("Ride id is required")
-    }
-
-    const ride = await rideModel.findOne({
-        _id: rideId,
-        captain: captain._id
-    }).populate('user').populate('captain').select('+otp')
-
-    if (!ride) {
-        throw new Error("Ride not found")
-    }
-
-    if (ride.status !== 'ongoing') {
-        throw new Error("Ride is not ongoing")
-    }
-
-    await rideModel.findOneAndUpdate({
-        _id: rideId
-    }, {
-        status: 'completed'
-    })
-
-    return ride
-
+    return updatedRide; 
 }
 
 module.exports.endRide = async ({ rideId, captain }) => {
@@ -170,23 +143,20 @@ module.exports.endRide = async ({ rideId, captain }) => {
     }
 
     // Update ride status to completed
-    await rideModel.findOneAndUpdate({
-        _id: rideId
-    }, {
-        status: 'completed'
-    })
+    const updatedRide = await rideModel.findOneAndUpdate(
+        { _id: rideId },
+        { status: 'completed' },
+        { new: true }
+    ).populate('user').populate('captain');
 
-    // Increment captain's ride count and update earnings
+    // Update captain's stats
     const captainModel = require('../models/captain.model');
     const captainDoc = await captainModel.findById(captain._id);
 
     if (captainDoc) {
-        // Increment ride count
         await captainDoc.incrementTodayRideCount();
-
-        // Update earnings (assuming ride.fare is the earnings)
         await captainDoc.updateEarnings(ride.fare);
     }
 
-    return ride
+    return updatedRide;
 }

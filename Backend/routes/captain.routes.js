@@ -67,4 +67,6 @@ router.put('/profile/picture',
     captainController.updateProfilePicture
 );
 
+
+
 module.exports = router;

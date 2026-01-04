@@ -180,22 +180,29 @@ module.exports.getCaptainRideStats = async (req, res, next) => {
             });
         }
 
-        // Ensure stats exist with default values
-        const rideStats = captain.rideStats || {
-            todayRides: 0,
-            totalRides: 0
-        };
+        const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
 
-        const earningStats = captain.earningStats || {
-            todayEarnings: 0,
-            totalEarnings: 0
-        };
+        // Calculate today's rides and earnings
+        const todayRides = captain.rideStats?.[today] || 0;
+        const todayEarnings = captain.earningStats?.[today] || 0;
+
+        // Calculate total rides and earnings
+        let totalRides = 0;
+        let totalEarnings = 0;
+
+        if (captain.rideStats && typeof captain.rideStats === 'object') {
+            totalRides = Object.values(captain.rideStats).reduce((sum, count) => sum + count, 0);
+        }
+
+        if (captain.earningStats && typeof captain.earningStats === 'object') {
+            totalEarnings = Object.values(captain.earningStats).reduce((sum, amount) => sum + amount, 0);
+        }
 
         res.status(200).json({
-            todayRides: rideStats.todayRides || 0,
-            totalRides: rideStats.totalRides || 0,
-            todayEarnings: earningStats.todayEarnings || 0,
-            totalEarnings: earningStats.totalEarnings || 0
+            todayRides,
+            totalRides,
+            todayEarnings,
+            totalEarnings
         });
     } catch (error) {
         console.error("Error in getCaptainRideStats:", error);
