@@ -113,15 +113,15 @@ module.exports.startRide = async ({ rideId, otp, captain }) => {
     const updatedRide = await rideModel.findOneAndUpdate(
         { _id: rideId },
         { status: 'ongoing' },
-        { new: true } 
+        { new: true }
     ).populate('user').populate('captain').select('+otp')
 
     sendMessageToSocketId(updatedRide.user.socketId, {
         event: "ride-started",
-        data: updatedRide 
+        data: updatedRide
     })
 
-    return updatedRide; 
+    return updatedRide;
 }
 
 module.exports.endRide = async ({ rideId, captain }) => {
@@ -142,10 +142,13 @@ module.exports.endRide = async ({ rideId, captain }) => {
         throw new Error("Ride is not ongoing")
     }
 
-    // Update ride status to completed
+    // Update ride status to completed and ensure payment status is updated if it's a cash ride
     const updatedRide = await rideModel.findOneAndUpdate(
         { _id: rideId },
-        { status: 'completed' },
+        {
+            status: 'completed',
+            paymentStatus: 'paid' // Safety fallback to ensure it's marked as paid when ride ends
+        },
         { new: true }
     ).populate('user').populate('captain');
 

@@ -36,6 +36,10 @@ const userSchema = new mongoose.Schema({
     profilePicPublicId: {
         type: String,
         default: '' // Cloudinary public_id for deletion
+    },
+    createdAt : {
+        type : Date ,
+        default : Date.now
     }
 }, { timestamps: true }); // Added timestamps for createdAt and updatedAt
 

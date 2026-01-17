@@ -56,6 +56,10 @@ const rideSchema = new mongoose.Schema({
         type: String,
         enum: ['Cash', 'Card'],
         default: 'Cash'
+    },
+    createdAt : {
+        type : Date ,
+        default : Date.now
     }
 });
 

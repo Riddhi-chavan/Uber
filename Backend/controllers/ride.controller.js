@@ -165,7 +165,43 @@ module.exports.confirmPayment = async (req, res) => {
     const { rideId, paymentIntentId } = req.body;
 
     try {
-        const ride = await stripeService.confirmPayment(rideId, paymentIntentId);
+        let ride;
+        if (paymentIntentId) {
+            ride = await stripeService.confirmPayment(rideId, paymentIntentId);
+        } else {
+            // Handle Cash payment confirmation
+            ride = await rideModel.findById(rideId).populate('user').populate('captain');
+            if (!ride) {
+                return res.status(404).json({ message: "Ride not found" });
+            }
+
+            ride.paymentStatus = 'paid';
+            await ride.save();
+
+            const paymentData = {
+                rideId: ride._id,
+                captainId: ride.captain._id,
+                userId: ride.user._id,
+                paymentStatus: 'paid',
+                timestamp: new Date().toISOString(),
+                fare: ride.fare,
+                paymentMethod: 'cash'
+            };
+
+            // Notify both parties
+            if (ride.user?.socketId) {
+                sendMessageToSocketId(ride.user.socketId, {
+                    event: "payment-completed",
+                    data: paymentData
+                });
+            }
+            if (ride.captain?.socketId) {
+                sendMessageToSocketId(ride.captain.socketId, {
+                    event: "payment-completed",
+                    data: paymentData
+                });
+            }
+        }
         res.status(200).json(ride);
     } catch (error) {
         console.error("Payment Confirmation Error:", error);

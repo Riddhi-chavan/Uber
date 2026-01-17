@@ -79,6 +79,10 @@ const captainSchema = new mongoose.Schema({
     earningStats: {
         type: Object,
         default: {}
+    },
+    createdAt : {
+        type : Date ,
+        default : Date.now
     }
 }, {
     timestamps: true

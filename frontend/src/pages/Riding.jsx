@@ -151,7 +151,9 @@ const Riding = () => {
   const { socket } = useContext(SocketContext);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [showPaymentSuccess, setShowPaymentSuccess] = useState(false);
-  const [Paid, setPaid] = useState(false)
+  const [Paid, setPaid] = useState(ride.paymentStatus === 'paid')
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   // Refs for GSAP animations
   const successOverlayRef = useRef(null);
@@ -226,8 +228,6 @@ const Riding = () => {
   }, [showPaymentSuccess]);
 
 
-
-
   useEffect(() => {
     if (socket) {
       socket.on("payment-completed", (data) => {
@@ -260,14 +260,43 @@ const Riding = () => {
     libraries: libraries
   });
 
+  const handleCashPayment = async (event) => {
+    if (event) event.preventDefault();
+    setLoading(true);
+    setError(null);
+
+    try {
+      // Confirm payment on backend
+      await axios.post(`${import.meta.env.VITE_BASE_URL}/rides/confirm-payment`,
+        {
+          rideId: ride._id,
+          // No paymentIntentId for cash
+        },
+        {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
+        }
+      );
+
+      console.log("Cash payment confirmed on backend");
+      setPaid(true)
+
+    } catch (err) {
+      setError(err.response?.data?.message || "Cash payment failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handlePaymentProcess = () => {
     if (ride.paymentMode === 'Card') {
       setShowPaymentModal(true);
     } else if (ride.paymentMode === 'Cash') {
+      handleCashPayment()
       setPaid(true)
     }
   }
-
 
 
   return (
