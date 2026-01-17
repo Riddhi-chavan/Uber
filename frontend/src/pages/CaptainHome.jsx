@@ -1,9 +1,7 @@
-import React, { useRef, useState, useEffect, useContext } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import { Link } from 'react-router-dom'
 import CaptainDetails from '../components/CaptainDetails'
 import RidePopUp from '../components/RidePopUp'
-import { useGSAP } from '@gsap/react'
-import gsap from 'gsap'
 import ConfirmRidePopUp from '../components/ConfirmRidePopUp'
 import { SocketContext } from '../context/SocketContext'
 import { CaptainDataContext } from '../context/CaptainContext'
@@ -13,8 +11,6 @@ import LiveTracking from '../components/LiveTracking'
 const CaptainHome = () => {
   const [ridePopPanel, setRidePopPanel] = useState(false)
   const [confirmRidePopPanel, setConfirmRidePopPanel] = useState(false)
-  const ridePopPanelRef = useRef(null)
-  const confirmRidePopPanelRef = useRef(null)
   const [ride, setRide] = useState(null)
 
   const { socket } = useContext(SocketContext)
@@ -26,109 +22,121 @@ const CaptainHome = () => {
     const updateLocation = () => {
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(position => {
-          console.log({
-            userId: captain._id,
-            location: {
-              ltd: position.coords.latitude,
-              lng: position.coords.longitude
-            }
-          })
           socket.emit("update-location-captain", {
             userId: captain._id,
             location: {
               ltd: position.coords.latitude,
               lng: position.coords.longitude
             }
-          });
-        });
+          })
+        })
       }
-    };
+    }
 
-    const locationInterval = setInterval(updateLocation, 10000);
-    updateLocation();
+    const locationInterval = setInterval(updateLocation, 10000)
+    updateLocation()
 
-    return () => clearInterval(locationInterval);
+    return () => clearInterval(locationInterval)
   }, [])
 
   socket.on("new-ride", (data) => {
-    console.log("data", data)
     setRide(data)
     setRidePopPanel(true)
   })
 
-
-
   async function confirmRide() {
-    console.log("confirming ride", ride._id, captain._id)
-    const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/rides/confirm-ride`, {
+    await axios.post(`${import.meta.env.VITE_BASE_URL}/rides/confirm-ride`, {
       rideId: ride._id,
       captainId: captain._id,
-
     }, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('Captaintoken')}`
       }
     })
-
-    console.log("response", response.data)
   }
 
-
-  useGSAP(function () {
-    if (ridePopPanel) {
-      gsap.to(ridePopPanelRef.current, {
-        transform: "translateY(0)"
-      })
-    } else {
-      gsap.to(ridePopPanelRef.current, {
-        transform: "translateY(100%)"
-      })
-    }
-  }, [ridePopPanel])
-
-  useGSAP(function () {
-    if (confirmRidePopPanel) {
-      gsap.to(confirmRidePopPanelRef.current, {
-        transform: "translateY(0)"
-      })
-    } else {
-      gsap.to(confirmRidePopPanelRef.current, {
-        transform: "translateY(100%)"
-      })
-    }
-  }, [confirmRidePopPanel])
-
-  console.log("ride", ride)
+  // When confirm panel opens, close the ride pop panel first
+  const handleAcceptRide = () => {
+    setRidePopPanel(false) // Close ride popup first
+    setConfirmRidePopPanel(true) // Then open confirm panel
+    confirmRide()
+  }
 
   return (
-    <div className='h-screen'>
-      <div className='fixed p-6 top-0 flex justify-between items-center w-full'>
-        <img className='w-16' src="https://logos-world.net/wp-content/uploads/2020/05/Uber-Logo.png" alt="" />
-        <Link to="/captain-login" className=' h-10 w-10 bg-white flex items-center justify-center rounded-full'>
-          <i className="ri-logout-box-r-line"></i>
+    <div className='min-h-screen bg-gray-50'>
+      {/* Header */}
+      <header className='app-header'>
+        <img
+          className='w-20 h-auto'
+          src="https://logos-world.net/wp-content/uploads/2020/05/Uber-Logo.png"
+          alt="Uber"
+        />
+        <Link
+          to="/captain-login"
+          className='fab'
+        >
+          <i className="ri-logout-box-r-line text-gray-700"></i>
         </Link>
-      </div>
+      </header>
 
-      <div className='h-3/5'>
+      {/* Map Section */}
+      <div className='h-[60vh] pt-16'>
         <LiveTracking />
       </div>
-      <div className='h-2/5 p-6'>
+
+      {/* Captain Details Card */}
+      <div className='bg-white rounded-t-3xl -mt-6 relative z-10 min-h-[40vh] p-6 shadow-lg'>
+        <div className="w-12 h-1.5 bg-gray-300 rounded-full mx-auto mb-4"></div>
         <CaptainDetails />
       </div>
-      <div ref={ridePopPanelRef} className='fixed w-full bg-white translate-y-full  z-10 bottom-0   px-3 py-10  pt-12 max-w-4xl mx-auto'>
-        <RidePopUp
-          ride={ride}
-          setRidePopPanel={setRidePopPanel}
-          setConfirmRidePopPanel={setConfirmRidePopPanel}
-          confirmRide={confirmRide}
-        />
-      </div>
-      <div ref={confirmRidePopPanelRef} className='fixed w-full bg-white  h-screen translate-y-full  z-10 bottom-0   px-3 py-10  pt-12 max-w-4xl mx-auto'>
-        <ConfirmRidePopUp
-          ride={ride}
-          setConfirmRidePopPanel={setConfirmRidePopPanel} setRidePopPanel={setRidePopPanel}
-        />
-      </div>
+
+      {/* Ride Pop Up Panel - Only show when ridePopPanel is true AND confirmRidePopPanel is false */}
+      {ridePopPanel && !confirmRidePopPanel && (
+        <>
+          {/* Backdrop for desktop */}
+          <div
+            className="fixed inset-0 bg-black/30 z-40 hidden md:block"
+            onClick={() => setRidePopPanel(false)}
+          ></div>
+          {/* Panel - bottom sheet on mobile, right sidebar on desktop */}
+          <div
+            className='fixed z-50 bg-white overflow-y-auto p-6 pt-3
+              bottom-0 left-0 right-0 max-h-[85vh] rounded-t-3xl
+              md:top-0 md:right-0 md:bottom-0 md:left-auto md:max-h-none md:h-full md:w-[420px] md:rounded-none md:shadow-[-4px_0_20px_rgba(0,0,0,0.1)] md:border-l md:border-gray-200'
+          >
+            <div className="w-12 h-1.5 bg-gray-300 rounded-full mx-auto mb-4 md:hidden"></div>
+            <RidePopUp
+              ride={ride}
+              setRidePopPanel={setRidePopPanel}
+              setConfirmRidePopPanel={setConfirmRidePopPanel}
+              confirmRide={handleAcceptRide}
+            />
+          </div>
+        </>
+      )}
+
+      {/* Confirm Ride Pop Up Panel - Only show when confirmRidePopPanel is true */}
+      {confirmRidePopPanel && (
+        <>
+          {/* Backdrop for desktop */}
+          <div
+            className="fixed inset-0 bg-black/30 z-40 hidden md:block"
+            onClick={() => setConfirmRidePopPanel(false)}
+          ></div>
+          {/* Panel - full screen on mobile, right sidebar on desktop */}
+          <div
+            className='fixed z-50 bg-white overflow-y-auto p-6
+              inset-0
+              md:top-0 md:right-0 md:bottom-0 md:left-auto md:w-[420px] md:h-full md:shadow-[-4px_0_20px_rgba(0,0,0,0.1)] md:border-l md:border-gray-200'
+          >
+            <ConfirmRidePopUp
+              ride={ride}
+              setConfirmRidePopPanel={setConfirmRidePopPanel}
+              setRidePopPanel={setRidePopPanel}
+            />
+          </div>
+        </>
+      )}
     </div>
   )
 }

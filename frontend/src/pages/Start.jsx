@@ -2,37 +2,80 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 
 const Start = () => {
-  return (
-    <div className="bg-white min-h-screen w-full md:flex items-center justify-center h-screen">
-      <div className='md:hidden bg-cover bg-[url(/getstarted.webp)] h-screen flex pt-8   flex-col justify-between  w-full '>
-        <img className='w-16 ml-9' src="/uberLogo.png" alt="" />
-        <div className='bg-white pb-4 p-4 px-4 flex flex-col gap-4'>
-          <h2 className='text-[30px] font-bold'>Get Started with Uber</h2>
-          <Link to="/login" className=' flex items-center justify-center w-full  bg-black text-white py-2.5 rounded-lg mt-4'>Continue</Link>
-        </div>
-      </div>
+    return (
+        <div className='min-h-screen flex flex-col bg-white'>
+            {/* Hero Section */}
+            <div className='flex-1 relative overflow-hidden'>
+                {/* Background Pattern */}
+                <div className='absolute inset-0 bg-gradient-to-br from-gray-50 to-gray-100'>
+                    <div className='absolute inset-0 opacity-5'>
+                        <div className='absolute top-20 left-10 w-64 h-64 bg-black rounded-full blur-3xl'></div>
+                        <div className='absolute bottom-20 right-10 w-96 h-96 bg-black rounded-full blur-3xl'></div>
+                    </div>
+                </div>
 
-      <div className='hidden  md:block w-full h-screen max-w-6xl '>
-        <img className='w-16 ' src="/uberLogo.png" alt="" />
-        <div className="hidden md:flex max-w-6xl w-full mx-4 lg:mx-auto h-3/4 items-center  overflow-hidden">
-          <div className='w-[50%] '>
+                {/* Content */}
+                <div className='relative z-10 flex flex-col items-center justify-center h-full px-8 py-16'>
+                    {/* Logo */}
+                    <img
+                        className='w-32 h-auto mb-8'
+                        src="https://logos-world.net/wp-content/uploads/2020/05/Uber-Logo.png"
+                        alt="Uber"
+                    />
 
-            <div>
-              <p className='text-[44px] text-black'>Get Started with Uber</p>
+                    {/* Headline */}
+                    <h1 className='text-4xl md:text-5xl font-bold text-gray-900 text-center mb-4'>
+                        Move the way<br />you want
+                    </h1>
+                    <p className='text-lg text-gray-500 text-center max-w-md'>
+                        Request a ride, hop in, and go. It's that simple.
+                    </p>
+
+                    {/* Illustration */}
+                    <div className='mt-12 w-full max-w-sm'>
+                        <div className='aspect-square rounded-3xl bg-gray-100 flex items-center justify-center overflow-hidden'>
+                            <img
+                                src="https://www.uber-assets.com/image/upload/f_auto,q_auto:eco,c_fill,w_558,h_372/v1555543694/assets/db/83c9ad-ad6c-49a1-9a04-3196a93c1d0b/original/Poster+Background.png"
+                                alt="Uber Ride"
+                                className='w-full h-full object-cover'
+                            />
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div>
-              <Link to="/login" className=' flex items-center justify-center w-full max-w-64  bg-black
-             text-white py-2.5 rounded-lg mt-4'>Continue</Link>
-            </div>
-          </div>
-          <div className=' w-[50%] rounded-xl'>
-            <img src='/getstarted.webp' />
-          </div>
-        </div>
-      </div>
 
-    </div>
-  )
+            {/* Bottom Section */}
+            <div className='p-8 pb-12 bg-white'>
+                <div className='space-y-4 max-w-md mx-auto'>
+                    <Link
+                        to="/login"
+                        className='btn-primary btn-full btn-lg text-center'
+                    >
+                        Get Started
+                    </Link>
+
+                    <div className='flex items-center gap-4'>
+                        <div className='flex-1 h-px bg-gray-200'></div>
+                        <span className='text-gray-400 text-sm'>or</span>
+                        <div className='flex-1 h-px bg-gray-200'></div>
+                    </div>
+
+                    <Link
+                        to="/captain-login"
+                        className='btn-secondary btn-full btn-lg text-center flex items-center justify-center gap-2'
+                    >
+                        <i className="ri-steering-2-line"></i>
+                        Sign in as Driver
+                    </Link>
+                </div>
+
+                {/* Footer */}
+                <p className='text-center text-xs text-gray-400 mt-8'>
+                    By continuing, you agree to our Terms of Service and Privacy Policy
+                </p>
+            </div>
+        </div>
+    )
 }
 
 export default Start

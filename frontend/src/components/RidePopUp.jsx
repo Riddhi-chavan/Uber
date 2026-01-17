@@ -1,59 +1,82 @@
 import React from 'react'
 
 const RidePopUp = (props) => {
-    console.log("props.ride?.user.profilePicture", `${import.meta.env.VITE_BASE_URL}/uploads/${props.ride?.user.profilePicture.split('/').pop()}`)
     return (
-        <div>
-            <h5
-                className='p-1 text-center absolute top-0 w-[93%] ' onClick={() => {
-                    props.setRidePopPanel(false)
-                }} >
-                <i className="text-3xl text-gray-200  ri-arrow-down-wide-line"></i>
-            </h5>
-            <h3 className='text-2xl font-semibold mb-5'>New Ride Available!</h3>
-            <div className='flex items-center justify-between mt-4 p-3 bg-yellow-300 rounded-lg'>
-                <div className='flex items-center gap-3 '>
-                    <img className='h-12 w-12 rounded-full object-cover' src={props.ride?.user.profilePicture} alt="" />
-                    <h2 className='text-lg font-medium'>{props.ride?.user.fullname.firstname + " " + props.ride?.user.fullname.lastname}</h2>
-                </div>
-
+        <div className='space-y-6'>
+            {/* Title */}
+            <div>
+                <h3 className='text-2xl font-bold text-gray-900'>New Ride Request</h3>
+                <p className='text-gray-500 mt-1'>A rider is requesting a trip</p>
             </div>
-            <div className='flex gap-2 flex-col justify-between items-center'>
-                <div className='w-full mt-5'>
-                    <div className='flex items-center gap-5 border-b-2 p-3'>
-                        <i className=" text-lg ri-map-pin-user-fill"></i>
-                        <div className=''>
-                            <h3 className='text-lg font-medium'>Pickup</h3>
-                            <p className='text-sm -mt-1 text-gray-600'>{props.ride?.pickup}</p>
-                        </div>
-                    </div>
-                    <div className='flex items-center gap-5 border-b-2 p-3'>
-                        <i className=" text-lg ri-map-pin-2-fill"></i>
-                        <div className=''>
-                            <h3 className='text-lg font-medium'>Destination</h3>
-                            <p className='text-sm -mt-1 text-gray-600'>{props.ride?.destination}</p>
-                        </div>
-                    </div>
-                    <div className='flex items-center gap-5  p-3'>
-                        <i className="text-lg ri-currency-line"></i>
-                        <div className=''>
-                            <h3 className='text-lg font-medium'>₹{props.ride?.fare}</h3>
-                            <p className='text-sm -mt-1 text-gray-600'>{props.ride?.paymentMode}</p>
-                        </div>
-                    </div>
 
-
+            {/* User Info Card */}
+            <div className='user-card'>
+                <img
+                    className='user-avatar'
+                    src={props.ride?.user?.profilePicture || `https://ui-avatars.com/api/?name=${props.ride?.user?.fullname?.firstname}+${props.ride?.user?.fullname?.lastname}&background=random`}
+                    alt="Rider"
+                />
+                <div className='flex-1'>
+                    <h2 className='font-semibold text-gray-900'>
+                        {props.ride?.user.fullname.firstname} {props.ride?.user.fullname.lastname}
+                    </h2>
+                    <p className='text-sm text-gray-500'>Verified Rider</p>
                 </div>
-                <div className='flex w-full items-center justify-between mt-5'>
-                    <button className=' bg-gray-300 text-gray-700 font-semibold p-3 px-8 rounded-lg' onClick={() => {
-                        props.setRidePopPanel(false)
-                    }}>Ignore</button>
-                    <button className=' bg-green-600 text-white font-semibold p-3 px-8 rounded-lg' onClick={() => {
-                        props.setConfirmRidePopPanel(true)
-                        props.confirmRide()
-                    }}>Accept</button>
+            </div>
 
+            {/* Trip Details */}
+            <div className='space-y-1'>
+                <div className='info-row'>
+                    <div className='info-row-icon bg-gray-900'>
+                        <i className="ri-map-pin-line text-white"></i>
+                    </div>
+                    <div className='flex-1'>
+                        <p className='text-sm text-gray-500'>Pickup</p>
+                        <p className='font-medium text-gray-900'>{props.ride?.pickup}</p>
+                    </div>
                 </div>
+
+                <div className='info-row'>
+                    <div className='info-row-icon' style={{ backgroundColor: '#06C167' }}>
+                        <i className="ri-map-pin-fill text-white"></i>
+                    </div>
+                    <div className='flex-1'>
+                        <p className='text-sm text-gray-500'>Destination</p>
+                        <p className='font-medium text-gray-900'>{props.ride?.destination}</p>
+                    </div>
+                </div>
+            </div>
+
+            {/* Fare Card */}
+            <div className='bg-gray-50 rounded-2xl p-5 flex items-center justify-between'>
+                <div className='flex items-center gap-4'>
+                    <div className='w-12 h-12 rounded-full bg-green-100 flex items-center justify-center'>
+                        <i className="ri-money-rupee-circle-line text-2xl text-green-600"></i>
+                    </div>
+                    <div>
+                        <p className='text-sm text-gray-500'>Trip Fare</p>
+                        <p className='text-2xl font-bold text-gray-900'>₹{props.ride?.fare}</p>
+                    </div>
+                </div>
+                <span className={`badge ${props.ride?.paymentMode === 'Cash' ? 'badge-warning' : 'badge-success'}`}>
+                    {props.ride?.paymentMode}
+                </span>
+            </div>
+
+            {/* Action Buttons */}
+            <div className='flex gap-4'>
+                <button
+                    className='flex-1 btn-secondary btn-lg'
+                    onClick={() => props.setRidePopPanel(false)}
+                >
+                    Ignore
+                </button>
+                <button
+                    className='flex-1 btn-success btn-lg'
+                    onClick={props.confirmRide}
+                >
+                    Accept Ride
+                </button>
             </div>
         </div>
     )

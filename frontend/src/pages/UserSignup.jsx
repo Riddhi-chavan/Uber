@@ -1,234 +1,192 @@
 import React, { useContext, useState, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import axios from "axios"
 import { UserDataContext } from '../context/UserContext'
+import axios from 'axios'
 
 const UserSignup = () => {
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [firstName, setFirstName] = useState("")
-  const [lastName, setLastName] = useState("")
-  const [userData, setUserData] = useState({})
-  const [profilePic, setProfilePic] = useState(null)
-  const [previewUrl, setPreviewUrl] = useState(null)
-  const [isDragging, setIsDragging] = useState(false)
-  const fileInputRef = useRef(null)
+    const [email, setEmail] = useState("")
+    const [password, setPassword] = useState("")
+    const [firstName, setFirstName] = useState("")
+    const [lastName, setLastName] = useState("")
+    const [profilePic, setProfilePic] = useState(null)
+    const [previewUrl, setPreviewUrl] = useState(null)
+    const [isLoading, setIsLoading] = useState(false)
+    const [error, setError] = useState("")
+    const fileInputRef = useRef(null)
+    const { setUser } = useContext(UserDataContext)
+    const navigate = useNavigate()
 
-  const { user, setUser } = useContext(UserDataContext)
-
-  const navigate = useNavigate()
-
-  const handleFileChange = (e) => {
-    const file = e.target.files[0]
-    if (file && file.type.startsWith('image/')) {
-      setProfilePic(file)
-      const fileReader = new FileReader()
-      fileReader.onload = () => {
-        setPreviewUrl(fileReader.result)
-      }
-      fileReader.readAsDataURL(file)
-    }
-  }
-
-  const handleDragOver = (e) => {
-    e.preventDefault()
-    setIsDragging(true)
-  }
-
-  const handleDragLeave = (e) => {
-    e.preventDefault()
-    setIsDragging(false)
-  }
-
-  const handleDrop = (e) => {
-    e.preventDefault()
-    setIsDragging(false)
-    const file = e.dataTransfer.files[0]
-    if (file && file.type.startsWith('image/')) {
-      setProfilePic(file)
-      const fileReader = new FileReader()
-      fileReader.onload = () => {
-        setPreviewUrl(fileReader.result)
-      }
-      fileReader.readAsDataURL(file)
-    }
-  }
-
-  const triggerFileInput = () => {
-    fileInputRef.current.click()
-  }
-
-  const submitHandler = async (e) => {
-    e.preventDefault()
-    
-    // Create FormData to handle file upload
-    const formData = new FormData()
-    formData.append('firstname', firstName)
-    formData.append('lastname', lastName)
-    formData.append('email', email)
-    formData.append('password', password)
-    
-    // Append profile picture if it exists
-    if (profilePic) {
-      formData.append('profilePic', profilePic)
-    }
-
-    try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/users/register`, 
-        formData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          }
+    const handleFileChange = (e) => {
+        const file = e.target.files[0]
+        if (file && file.type.startsWith('image/')) {
+            setProfilePic(file)
+            const fileReader = new FileReader()
+            fileReader.onload = () => setPreviewUrl(fileReader.result)
+            fileReader.readAsDataURL(file)
         }
-      )
-      
-      if (response.status === 201) {
-        const data = response.data
-        setUser(data.user)
-        localStorage.setItem("token", data.token)
-        navigate("/home")
-      }
-    } catch (error) {
-      console.error("Registration error:", error)
     }
 
-    setEmail("")
-    setFirstName("")
-    setLastName("")
-    setPassword("")
-    setProfilePic(null)
-    setPreviewUrl(null)
-  }
+    const submitHandler = async (e) => {
+        e.preventDefault()
+        setIsLoading(true)
+        setError("")
 
-  return (
-    <div className="bg-white text-black flex min-h-screen flex-col items-center pt-16 sm:justify-center sm:pt-0">
-      <div className="text-foreground font-semibold text-2xl tracking-tighter mx-auto flex items-center">
-        <div>
-          <img className='w-16' src="/uberLogo.png" alt="" />
-        </div>
-      </div>
+        const formData = new FormData()
+        formData.append('firstname', firstName)
+        formData.append('lastname', lastName)
+        formData.append('email', email)
+        formData.append('password', password)
+        if (profilePic) {
+            formData.append('profilePic', profilePic)
+        }
 
-      <div className="relative mt-12 w-full max-w-lg sm:mt-10">
-        <div className="relative -mb-px h-px w-full bg-gradient-to-r from-transparent via-sky-300 to-transparent"></div>
-        <div className="mx-5 border border-b-black/50 border-t-black/50 sm:border-t-black/20 shadow-black/20 rounded-lg border-black/20 border-l-black/20 border-r-black/20 sm:shadow-sm lg:rounded-xl lg:shadow-none">
-          <div className="flex flex-col p-6">
-            <h3 className="text-xl font-semibold leading-6 tracking-tighter">Register</h3>
-            <p className="mt-1.5 text-sm font-medium text-black/50">Welcome, enter your credentials to continue.</p>
-          </div>
-          <div className="p-6 pt-0">
-            <form onSubmit={submitHandler}>
-              {/* Profile Picture Upload */}
-              <div className="mb-6 flex flex-col items-center">
-                <div 
-                  className={`w-32 h-32 rounded-full border-2 border-dashed flex items-center justify-center cursor-pointer mb-2 overflow-hidden ${isDragging ? 'border-sky-400 bg-sky-50' : 'border-gray-300'}`}
-                  onClick={triggerFileInput}
-                  onDragOver={handleDragOver}
-                  onDragLeave={handleDragLeave}
-                  onDrop={handleDrop}
-                >
-                  {previewUrl ? (
-                    <img src={previewUrl} alt="Profile Preview" className="w-full h-full object-cover" />
-                  ) : (
-                    <div className="text-center p-2">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-gray-400 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                      </svg>
-                      <p className="text-xs mt-1">Add photo</p>
-                    </div>
-                  )}
-                </div>
-                <input 
-                  type="file" 
-                  ref={fileInputRef} 
-                  className="hidden" 
-                  accept="image/*" 
-                  onChange={handleFileChange} 
-                />
-                <p className="text-xs text-gray-500">Drag & drop or click to upload</p>
-              </div>
+        try {
+            const response = await axios.post(
+                `${import.meta.env.VITE_BASE_URL}/users/register`,
+                formData,
+                { headers: { 'Content-Type': 'multipart/form-data' } }
+            )
 
-              <div className='flex gap-4 items-center'>
-                <div className='w-[50%]'>
-                  <div>
-                    <div className="group relative rounded-lg border focus-within:border-sky-200 px-3 duration-200 focus-within:ring focus-within:ring-sky-300/30">
-                      <input 
-                        name="firstname"
-                        type="text"
-                        required
-                        placeholder='First name'
-                        value={firstName}
-                        onChange={(e) => setFirstName(e.target.value)}
-                        autoComplete="off"
-                        className="block w-full border-0 bg-transparent p-0 text-sm file:my-1 file:rounded-full file:border-0 file:bg-accent file:px-4 file:py-2 file:font-medium placeholder:text-muted-foreground/90 focus:outline-none focus:ring-0 sm:leading-7 text-foreground py-2" 
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div className='w-[50%]'>
-                  <div>
-                    <div className="group relative rounded-lg border focus-within:border-sky-200 px-3 duration-200 focus-within:ring focus-within:ring-sky-300/30">
-                      <input 
-                        name="lastname"
-                        type="text"
-                        required
-                        placeholder='Last name'
-                        value={lastName}
-                        onChange={(e) => setLastName(e.target.value)}
-                        autoComplete="off"
-                        className="block w-full border-0 bg-transparent p-0 text-sm file:my-1 file:rounded-full file:border-0 file:bg-accent file:px-4 file:py-2 file:font-medium placeholder:text-muted-foreground/90 focus:outline-none focus:ring-0 sm:leading-7 text-foreground py-2" 
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className='flex gap-4 items-center mt-4'>
-                <div className='w-full'>
-                  <div>
-                    <div className="group relative rounded-lg border focus-within:border-sky-200 px-3 duration-200 focus-within:ring focus-within:ring-sky-300/30">
-                      <input 
-                        name="email"
-                        type="email"
-                        required
-                        placeholder='email@example.com'
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        autoComplete="off"
-                        className="block w-full border-0 bg-transparent p-0 text-sm file:my-1 file:rounded-full file:border-0 file:bg-accent file:px-4 file:py-2 file:font-medium placeholder:text-muted-foreground/90 focus:outline-none focus:ring-0 sm:leading-7 text-foreground py-2" 
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
+            if (response.status === 201) {
+                const data = response.data
+                setUser(data.user)
+                localStorage.setItem("token", data.token)
+                navigate('/home')
+            }
+        } catch (err) {
+            setError(err.response?.data?.message || "Registration failed. Please try again.")
+        } finally {
+            setIsLoading(false)
+        }
+    }
 
-              <div className="mt-4">
-                <div>
-                  <div className="group relative rounded-lg border focus-within:border-sky-200 px-3 duration-200 focus-within:ring focus-within:ring-sky-300/30">
-                    <input 
-                      type="password" 
-                      name="password"
-                      required
-                      placeholder='password'
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="block w-full border-0 bg-transparent p-0 text-sm file:my-1 placeholder:text-muted-foreground/90 focus:outline-none focus:ring-0 focus:ring-teal-500 sm:leading-7 text-foreground py-2.5" 
+    return (
+        <div className="min-h-screen bg-white py-8 px-6">
+            <div className="max-w-md mx-auto">
+                {/* Header */}
+                <div className="text-center mb-8">
+                    <img
+                        className='w-24 h-auto mx-auto mb-6'
+                        src="https://logos-world.net/wp-content/uploads/2020/05/Uber-Logo.png"
+                        alt="Uber"
                     />
-                  </div>
+                    <h1 className="text-2xl font-bold text-gray-900">Create account</h1>
+                    <p className="text-gray-500 mt-2">Sign up to start your journey</p>
                 </div>
-              </div>
-              <p className='text-left mt-2 text-sm ml-1'>Already have an account? <Link to="/login" className='text-gray-400'>Login here</Link></p>
-              <div className="mt-4 flex items-center justify-end gap-x-2">
-                <button
-                  className="font-semibold bg-black text-white hover:ring hover:ring-white transition duration-300 inline-flex items-center justify-center rounded-md text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2"
-                  type="submit">Register</button>
-              </div>
-            </form>
-          </div>
+
+                <form onSubmit={submitHandler} className="space-y-6">
+                    {/* Error Message */}
+                    {error && (
+                        <div className="bg-red-50 text-red-600 p-3 rounded-xl text-sm flex items-center gap-2">
+                            <i className="ri-error-warning-line"></i>
+                            {error}
+                        </div>
+                    )}
+
+                    {/* Profile Picture Upload */}
+                    <div className="flex flex-col items-center">
+                        <div
+                            className='w-24 h-24 rounded-full border-2 border-dashed border-gray-300 flex items-center justify-center cursor-pointer overflow-hidden transition-all duration-200 hover:border-gray-400'
+                            onClick={() => fileInputRef.current.click()}
+                        >
+                            {previewUrl ? (
+                                <img src={previewUrl} alt="Profile Preview" className="w-full h-full object-cover" />
+                            ) : (
+                                <div className="text-center">
+                                    <i className="ri-camera-line text-2xl text-gray-400"></i>
+                                </div>
+                            )}
+                        </div>
+                        <input
+                            type="file"
+                            ref={fileInputRef}
+                            className="hidden"
+                            accept="image/*"
+                            onChange={handleFileChange}
+                        />
+                        <p className="text-xs text-gray-400 mt-2">Add profile photo (optional)</p>
+                    </div>
+
+                    {/* Name Fields */}
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">First name</label>
+                            <input
+                                type="text"
+                                required
+                                placeholder="John"
+                                value={firstName}
+                                onChange={(e) => setFirstName(e.target.value)}
+                                className="input"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">Last name</label>
+                            <input
+                                type="text"
+                                required
+                                placeholder="Doe"
+                                value={lastName}
+                                onChange={(e) => setLastName(e.target.value)}
+                                className="input"
+                            />
+                        </div>
+                    </div>
+
+                    {/* Email */}
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Email address</label>
+                        <input
+                            type="email"
+                            required
+                            placeholder="name@example.com"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            className="input"
+                        />
+                    </div>
+
+                    {/* Password */}
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                        <input
+                            type="password"
+                            required
+                            placeholder="Create a password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            className="input"
+                        />
+                        <p className="text-xs text-gray-400 mt-1">Must be at least 6 characters</p>
+                    </div>
+
+                    {/* Submit Button */}
+                    <button
+                        type="submit"
+                        disabled={isLoading}
+                        className="btn-primary btn-full btn-lg"
+                    >
+                        {isLoading ? (
+                            <span className="flex items-center gap-2">
+                                <span className="spinner"></span>
+                                Creating account...
+                            </span>
+                        ) : (
+                            'Create account'
+                        )}
+                    </button>
+                </form>
+
+                {/* Footer */}
+                <p className="text-center text-gray-500 mt-8">
+                    Already have an account?{' '}
+                    <Link to="/login" className="text-black font-semibold hover:underline">
+                        Sign in
+                    </Link>
+                </p>
+            </div>
         </div>
-      </div>
-    </div>
-  )
+    )
 }
 
 export default UserSignup

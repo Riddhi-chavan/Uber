@@ -1,9 +1,10 @@
 import axios from 'axios'
 import React from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 const FinishRide = (props) => {
     const navigate = useNavigate()
+
     async function endRide() {
         const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/rides/end-ride`, {
             rideId: props.ride._id,
@@ -19,55 +20,89 @@ const FinishRide = (props) => {
         }
     }
 
-    console.log('pfp', `${import.meta.env.VITE_BASE_URL}/uploads/${props.ride?.user.profilePicture.split('/').pop()}`)
     return (
-        <div >
-            <h5
-                className='p-1 text-center absolute top-0 w-[93%] ' onClick={() => {
-                    props.setFinishRidePanel(false)
-                }} >
-                <i className="text-3xl text-gray-200  ri-arrow-down-wide-line"></i>
-            </h5>
-            <h3 className='text-2xl font-semibold mb-5'>Finish this Ride</h3>
-            <div className='flex items-center justify-between mt-4 p-4 border-yellow-300 border-2 rounded-lg'>
-                <div className='flex items-center gap-3 '>
-                    <img className='h-12 w-12 rounded-full object-cover' src={props.ride?.user.profilePicture} alt="" />
-                    <h2 className='text-lg font-medium'>{props.ride?.user.fullname.firstname}</h2>
+        <div className='space-y-6'>
+            {/* Header */}
+            <div className='flex items-center justify-between'>
+                <div>
+                    <h3 className='text-2xl font-bold text-gray-900'>Complete Ride</h3>
+                    <p className='text-gray-500 mt-1'>Confirm trip completion</p>
+                </div>
+                <button
+                    onClick={() => props.setFinishRidePanel(false)}
+                    className='w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors'
+                >
+                    <i className="ri-close-line text-xl text-gray-600"></i>
+                </button>
+            </div>
+
+            {/* User Info Card */}
+            <div className='user-card'>
+                <img
+                    className='user-avatar'
+                    src={props.ride?.user.profilePicture}
+                    alt="Rider"
+                />
+                <div className='flex-1'>
+                    <h2 className='font-semibold text-gray-900 capitalize'>
+                        {props.ride?.user.fullname.firstname} {props.ride?.user.fullname.lastname}
+                    </h2>
+                    <p className='text-sm text-gray-500'>Trip completed</p>
                 </div>
             </div>
-            <div className='flex gap-2 flex-col justify-between items-center'>
-                <div className='w-full mt-5'>
-                    <div className='flex items-center gap-5 border-b-2 p-3'>
-                        <i className=" text-lg ri-map-pin-user-fill"></i>
-                        <div className=''>
-                            <h3 className='text-lg font-medium'>Pickup Address</h3>
-                            <p className='text-sm -mt-1 text-gray-600'>{props.ride?.pickup}</p>
-                        </div>
-                    </div>
-                    <div className='flex items-center gap-5 border-b-2 p-3'>
-                        <i className=" text-lg ri-map-pin-2-fill"></i>
-                        <div className=''>
-                            <h3 className='text-lg font-medium'>Destination Address</h3>
-                            <p className='text-sm -mt-1 text-gray-600'>{props.ride?.destination}</p>
-                        </div>
-                    </div>
-                    <div className='flex items-center gap-5  p-3'>
-                        <i className="text-lg ri-currency-line"></i>
-                        <div className=''>
-                            <h3 className='text-lg font-medium'>₹{props.ride?.fare}</h3>
-                            <p className='text-sm -mt-1 text-gray-600'>{props.ride?.paymentMode}</p>
-                        </div>
-                    </div>
 
-
+            {/* Trip Details */}
+            <div className='space-y-1'>
+                <div className='info-row'>
+                    <div className='info-row-icon bg-gray-900'>
+                        <i className="ri-map-pin-line text-white"></i>
+                    </div>
+                    <div className='flex-1'>
+                        <p className='text-sm text-gray-500'>Pickup</p>
+                        <p className='font-medium text-gray-900'>{props.ride?.pickup}</p>
+                    </div>
                 </div>
 
-                <div className='mt-10 w-full'>
-                    <button
-                        onClick={endRide}
-                        className='w-full flex justify-center text-lg mt-5 bg-green-600 text-white font-semibold p-3 rounded-lg'>Finish Ride</button>
-                    <p className=' mt-10 text-xs text-center'>Click on finish ride buttom if you have received the payment</p>
+                <div className='info-row'>
+                    <div className='info-row-icon' style={{ backgroundColor: '#06C167' }}>
+                        <i className="ri-map-pin-fill text-white"></i>
+                    </div>
+                    <div className='flex-1'>
+                        <p className='text-sm text-gray-500'>Destination</p>
+                        <p className='font-medium text-gray-900'>{props.ride?.destination}</p>
+                    </div>
                 </div>
+            </div>
+
+            {/* Fare Card */}
+            <div className='bg-gray-50 rounded-2xl p-5 flex items-center justify-between'>
+                <div className='flex items-center gap-4'>
+                    <div className='w-12 h-12 rounded-full bg-green-100 flex items-center justify-center'>
+                        <i className="ri-money-rupee-circle-line text-2xl text-green-600"></i>
+                    </div>
+                    <div>
+                        <p className='text-sm text-gray-500'>Trip Fare</p>
+                        <p className='text-2xl font-bold text-gray-900'>₹{props.ride?.fare}</p>
+                    </div>
+                </div>
+                <span className={`badge ${props.ride?.paymentMode === 'Cash' ? 'badge-warning' : 'badge-success'}`}>
+                    {props.ride?.paymentMode}
+                </span>
+            </div>
+
+            {/* Complete Button */}
+            <div className='space-y-3'>
+                <button
+                    onClick={endRide}
+                    className='btn-success btn-full btn-lg'
+                >
+                    <i className="ri-check-line mr-2"></i>
+                    Complete Ride
+                </button>
+
+                <p className='text-xs text-center text-gray-400'>
+                    Only complete the ride after receiving payment from the rider
+                </p>
             </div>
         </div>
     )
