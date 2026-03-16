@@ -1,3 +1,4 @@
+![](https://github.com/user-attachments/assets/eaf3469a-5a05-4e28-9526-0c016cd54e04)
 # Uber Clone — Full-Stack Ride-Hailing Application
 
 A production-ready, real-time ride-hailing platform built from scratch that replicates the core Uber experience with dual user roles, live GPS tracking, and integrated payments.
