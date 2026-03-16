@@ -433,9 +433,9 @@ Fares are calculated server-side using Google's Distance Matrix API so the clien
 - Ensure the Cloudinary folder permissions are set correctly
 
 ## Contact
-**Email**: [your-email@gmail.com](mailto:your-email@gmail.com)  
-**Project Link**: [https://github.com/your-username/uber-clone](https://github.com/your-username/uber-clone)  
-**Live Demo**: [https://your-netlify-url.netlify.app](https://your-netlify-url.netlify.app)
+**Email**: [riddhic164@gmail.com](mailto:riddhic164@gmail.com)  
+**Project Link**: [https://github.com/Riddhi-chavan/Uber](https://github.com/Riddhi-chavan/Uber)  
+**Live Demo**: [https://vermillion-frangipane-2e08b1.netlify.app/](https://vermillion-frangipane-2e08b1.netlify.app/)
 
 ---
 
