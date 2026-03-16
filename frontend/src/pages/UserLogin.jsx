@@ -44,7 +44,7 @@ const UserLogin = () => {
             <div className="mb-10">
                 <img
                     className='w-24 h-auto'
-                    src="https://logos-world.net/wp-content/uploads/2020/05/Uber-Logo.png"
+                    src="/Uber-Logo.png"
                     alt="Uber"
                 />
             </div>

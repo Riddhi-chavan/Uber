@@ -67,7 +67,7 @@ const UserSignup = () => {
                 <div className="text-center mb-8">
                     <img
                         className='w-24 h-auto mx-auto mb-6'
-                        src="https://logos-world.net/wp-content/uploads/2020/05/Uber-Logo.png"
+                        src="/Uber-Logo.png"
                         alt="Uber"
                     />
                     <h1 className="text-2xl font-bold text-gray-900">Create account</h1>

@@ -19,7 +19,7 @@ const Start = () => {
                     {/* Logo */}
                     <img
                         className='w-32 h-auto mb-8'
-                        src="https://logos-world.net/wp-content/uploads/2020/05/Uber-Logo.png"
+                        src="/Uber-Logo.png"
                         alt="Uber"
                     />
 
@@ -35,7 +35,7 @@ const Start = () => {
                     <div className='mt-12 w-full max-w-sm'>
                         <div className='aspect-square rounded-3xl bg-gray-100 flex items-center justify-center overflow-hidden'>
                             <img
-                                src="https://www.uber-assets.com/image/upload/f_auto,q_auto:eco,c_fill,w_558,h_372/v1555543694/assets/db/83c9ad-ad6c-49a1-9a04-3196a93c1d0b/original/Poster+Background.png"
+                                src="/Uber.webp"
                                 alt="Uber Ride"
                                 className='w-full h-full object-cover'
                             />

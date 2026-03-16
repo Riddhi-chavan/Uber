@@ -84,7 +84,7 @@ const CaptainRiding = () => {
             <header className='app-header'>
                 <img
                     className='w-20 h-auto'
-                    src="https://logos-world.net/wp-content/uploads/2020/05/Uber-Logo.png"
+                    src="/Uber-Logo.png"
                     alt="Uber"
                 />
                 <Link to="/captain-login" className='fab'>
